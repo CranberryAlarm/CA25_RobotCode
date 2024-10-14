@@ -38,7 +38,6 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -72,9 +71,6 @@ public class Drivetrain extends Subsystem {
       MotorType.kBrushless);
   private final SimulatableCANSparkMax mRightFollower = new SimulatableCANSparkMax(Constants.Drive.kBRMotorId,
       MotorType.kBrushless);
-
-  private final MotorControllerGroup mLeftGroup = new MotorControllerGroup(mLeftLeader, mLeftFollower);
-  private final MotorControllerGroup mRightGroup = new MotorControllerGroup(mRightLeader, mRightFollower);
 
   private final RelativeEncoder mLeftEncoder;
   private final RelativeEncoder mRightEncoder;
@@ -147,7 +143,11 @@ public class Drivetrain extends Subsystem {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    mRightGroup.setInverted(true);
+    mRightLeader.setInverted(true);
+
+    // Set the leader/follower relationship for the left and right sides
+    mLeftFollower.follow(mLeftLeader, mLeftLeader.getInverted());
+    mRightFollower.follow(mRightLeader, mRightLeader.getInverted());
 
     mLeftEncoder = mLeftLeader.getEncoder();
     mRightEncoder = mRightLeader.getEncoder();
@@ -193,8 +193,8 @@ public class Drivetrain extends Subsystem {
             // Tell SysId how to plumb the driving voltage to the motors.
             (Measure<Voltage> volts) -> {
               // System.out.println("OPE:" + volts);
-              mLeftGroup.setVoltage(volts.in(Volts));
-              mRightGroup.setVoltage(volts.in(Volts));
+              mLeftLeader.setVoltage(volts.in(Volts));
+              mRightLeader.setVoltage(volts.in(Volts));
             },
             // Tell SysId how to record a frame of data for each motor on the mechanism
             // being characterized.
@@ -327,8 +327,8 @@ public class Drivetrain extends Subsystem {
     // simulated encoder and gyro. We negate the right side so that positive
     // voltages make the right side move forward.
     mDrivetrainSimulator.setInputs(
-        mLeftGroup.get() * RobotController.getInputVoltage(),
-        mRightGroup.get() * RobotController.getInputVoltage());
+        mLeftLeader.get() * RobotController.getInputVoltage(),
+        mRightLeader.get() * RobotController.getInputVoltage());
     mDrivetrainSimulator.update(0.02);
 
     // mLeftEncoderSim.setDistance(mdrivetrainSimulator.getLeftPositionMeters());
@@ -357,14 +357,13 @@ public class Drivetrain extends Subsystem {
 
   @Override
   public void reset() {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'reset'");
   }
 
   @Override
   public void writePeriodicOutputs() {
-    mLeftGroup.setVoltage(mPeriodicIO.leftVoltage);
-    mRightGroup.setVoltage(mPeriodicIO.rightVoltage);
+    mLeftLeader.setVoltage(mPeriodicIO.leftVoltage);
+    mRightLeader.setVoltage(mPeriodicIO.rightVoltage);
   }
 
   @Override

@@ -264,6 +264,7 @@ public class Robot extends LoggedRobot {
     m_field.setRobotPose(m_drive.getPose());
   }
 
+  @SuppressWarnings("resource")
   private void setupLogging() {
     Logger.recordMetadata("ProjectName", "Flipside"); // Set a metadata value
 
