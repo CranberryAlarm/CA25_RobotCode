@@ -26,7 +26,7 @@ public class DriveTrajectoryTask extends Task {
   private final Timer m_runningTimer = new Timer();
   private PPRamseteController m_driveController;
 
-  public DriveTrajectoryTask(String pathName, double maxSpeed, double maxAcceleration) {
+  public DriveTrajectoryTask(String pathName) {
     m_drive = Drivetrain.getInstance();
     Path trajectoryPath = null;
 

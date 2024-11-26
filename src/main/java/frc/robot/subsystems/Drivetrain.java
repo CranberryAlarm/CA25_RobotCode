@@ -146,8 +146,8 @@ public class Drivetrain extends Subsystem {
     mRightLeader.setInverted(true);
 
     // Set the leader/follower relationship for the left and right sides
-    mLeftFollower.follow(mLeftLeader, mLeftLeader.getInverted());
-    mRightFollower.follow(mRightLeader, mRightLeader.getInverted());
+    mLeftFollower.follow(mLeftLeader, false);
+    mRightFollower.follow(mRightLeader, false);
 
     mLeftEncoder = mLeftLeader.getEncoder();
     mRightEncoder = mRightLeader.getEncoder();
@@ -376,9 +376,9 @@ public class Drivetrain extends Subsystem {
     putNumber("leftVelocitySetPoint", mPeriodicIO.diffWheelSpeeds.leftMetersPerSecond);
     putNumber("rightVelocitySetPoint", mPeriodicIO.diffWheelSpeeds.rightMetersPerSecond);
     putNumber("leftVelocity", mLeftEncoder.getVelocity());
-    putNumber("rightVelocity", -mRightEncoder.getVelocity());
+    putNumber("rightVelocity", mRightEncoder.getVelocity());
     putNumber("leftMeters", mLeftEncoder.getPosition());
-    putNumber("rightMeters", -mRightEncoder.getPosition());
+    putNumber("rightMeters", mRightEncoder.getPosition());
     putNumber("Gyro", mGyro.getAngle());
   }
 

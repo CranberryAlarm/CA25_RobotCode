@@ -8,7 +8,8 @@ public class PPTestMode extends AutoModeBase {
         // queueTask(new DriveForwardTask(1, 0.4));
         // queueTask(new DriveTrajectoryTask("TestPath", 9999, 9999));
         // queueTask(new DriveTrajectoryTask("SubLeftNote1", 9999, 9999));
-        queueTask(new DriveTrajectoryTask("RedLeftLong", 9999, 9999));
+        queueTask(new DriveTrajectoryTask("Note2"));
+        queueTask(new DriveTrajectoryTask("Note2Back"));
 
         queueTask(new BrakeTask());
     }
