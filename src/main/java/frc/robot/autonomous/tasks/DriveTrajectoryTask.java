@@ -63,7 +63,6 @@ public class DriveTrajectoryTask extends Task {
       DriverStation.reportWarning("===== PATH IS REVERSED =====", false);
     }
 
-
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/trajectories/ramsete.html
     m_driveController = new PPLTVController(0.02, 1.0);
   }

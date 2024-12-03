@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.autonomous.AutoChooser;
 import frc.robot.autonomous.AutoRunner;
 import frc.robot.autonomous.tasks.Task;
 import frc.robot.controls.controllers.DriverController;
@@ -60,7 +59,6 @@ public class Robot extends LoggedRobot {
   // Auto stuff
   private Task m_currentTask;
   private AutoRunner m_autoRunner = AutoRunner.getInstance();
-  private AutoChooser m_autoChooser = new AutoChooser();
 
   // Simulation stuff
   private final Field m_field = Field.getInstance();
@@ -101,7 +99,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autoRunner.setAutoMode(m_autoChooser.getSelectedAuto());
     m_currentTask = m_autoRunner.getNextTask();
 
     // Start the first task

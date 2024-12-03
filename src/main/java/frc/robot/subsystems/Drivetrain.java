@@ -9,13 +9,9 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.function.BooleanSupplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -171,21 +167,22 @@ public class Drivetrain extends Subsystem {
 
     mPeriodicIO = new PeriodicIO();
 
+    // TODO: get rid of this?
     // Configure AutoBuilder last
-    AutoBuilder.configureRamsete(
-        this::getPose, // Robot pose supplier
-        this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-        this::getCurrentSpeeds, // Current ChassisSpeeds supplier
-        this::drive, // Method that will drive the robot given ChassisSpeeds
-        new ReplanningConfig(), // Default path replanning config. See the API for the options here
-        new BooleanSupplier() {
-          @Override
-          public boolean getAsBoolean() {
-            return true;
-          }
-        }, // determines if paths should be flipped to the other side of the field
-        this // Reference to this subsystem to set requirements
-    );
+    // AutoBuilder.configureRamsete(
+    //     this::getPose, // Robot pose supplier
+    //     this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+    //     this::getCurrentSpeeds, // Current ChassisSpeeds supplier
+    //     this::drive, // Method that will drive the robot given ChassisSpeeds
+    //     new ReplanningConfig(), // Default path replanning config. See the API for the options here
+    //     new BooleanSupplier() {
+    //       @Override
+    //       public boolean getAsBoolean() {
+    //         return true;
+    //       }
+    //     }, // determines if paths should be flipped to the other side of the field
+    //     this // Reference to this subsystem to set requirements
+    // );
 
     mSysIdRoutine = new SysIdRoutine(
         // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.

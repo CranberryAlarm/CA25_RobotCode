@@ -4,6 +4,13 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Auto picker": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Auto picker": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
@@ -13,13 +20,13 @@
     "transitory": {
       "SmartDashboard": {
         "Auto picker": {
-          "open": true
+          "open": true,
+          "string[]##v_/SmartDashboard/Auto picker/options": {
+            "open": true
+          }
         },
         "open": true
       }
     }
-  },
-  "NetworkTables Info": {
-    "visible": true
   }
 }
