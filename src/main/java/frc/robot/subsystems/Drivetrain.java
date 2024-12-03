@@ -85,6 +85,7 @@ public class Drivetrain extends Subsystem {
   private final DifferentialDriveKinematics mKinematics = new DifferentialDriveKinematics(kTrackWidth);
 
   private final DifferentialDriveOdometry mOdometry;
+  private boolean mPoseWasSet = false;
 
   private final SimpleMotorFeedforward mLeftFeedforward = new SimpleMotorFeedforward(Constants.Drive.kS,
       Constants.Drive.kV);
@@ -233,6 +234,13 @@ public class Drivetrain extends Subsystem {
   }
 
   /**
+   * Gets whether the bot pose has previously been set
+   */
+  public boolean poseWasSet() {
+    return mPoseWasSet;
+  }
+
+  /**
    * Sets whether slow mode should be used
    *
    * @param slowMode Should slow mode be used
@@ -287,6 +295,8 @@ public class Drivetrain extends Subsystem {
 
   /** Resets robot odometry. */
   public void resetOdometry(Pose2d pose) {
+    mPoseWasSet = true;
+
     mLeftEncoder.setPosition(0.0);
     mRightEncoder.setPosition(0.0);
     mDrivetrainSimulator.setPose(pose);

@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1779971487870853,
+        "x": 1.8609564776563325,
         "y": 5.519087794932347
       },
       "isLocked": false,
-      "linkedName": "SubStart"
+      "linkedName": "BlueShoot"
     },
     {
       "anchor": {
-        "x": 2.4645829471839122,
-        "y": 5.519087794932347
+        "x": 2.4436720411431017,
+        "y": 4.416184326394388
       },
       "prevControl": {
-        "x": 1.4846444107302628,
-        "y": 5.528332498106439
+        "x": 1.9934873918484728,
+        "y": 4.695528237362907
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Note2"
+      "linkedName": "Note3"
     }
   ],
   "rotationTargets": [],

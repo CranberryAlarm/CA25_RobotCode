@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4645829471839122,
-        "y": 5.519087794932347
+        "x": 2.4436720411431017,
+        "y": 4.416184326394388
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8082090218234488,
-        "y": 5.500598388584165
+        "x": 1.9816717188479342,
+        "y": 4.6829203368371966
       },
       "isLocked": false,
-      "linkedName": "Note2"
+      "linkedName": "Note3"
     },
     {
       "anchor": {
@@ -20,12 +20,12 @@
         "y": 5.519087794932347
       },
       "prevControl": {
-        "x": 2.0023485645389405,
-        "y": 5.528275671066979
+        "x": 1.9274844567707152,
+        "y": 5.519087794932347
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SubStart"
+      "linkedName": "BlueShoot"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
     "rotation": 0,
     "rotateFast": false
   },
-  "reversed": false,
+  "reversed": true,
   "folder": null,
   "previewStartingState": {
     "rotation": 0,

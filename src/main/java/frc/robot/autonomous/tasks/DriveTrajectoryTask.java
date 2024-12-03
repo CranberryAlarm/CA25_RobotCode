@@ -2,6 +2,8 @@ package frc.robot.autonomous.tasks;
 
 import java.nio.file.Path;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.controllers.PPRamseteController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
@@ -9,6 +11,9 @@ import com.pathplanner.lib.path.PathPlannerTrajectory.State;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -52,6 +57,11 @@ public class DriveTrajectoryTask extends Task {
         new ChassisSpeeds(),
         m_drive.getPose().getRotation());
 
+    if (m_autoPath.isReversed()) {
+      DriverStation.reportWarning("===== PATH IS REVERSED =====", false);
+    }
+
+
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/trajectories/ramsete.html
     m_driveController = new PPRamseteController(2.0, 0.7);
   }
@@ -62,8 +72,19 @@ public class DriveTrajectoryTask extends Task {
     m_runningTimer.start();
 
     // Set the initial Pose2d
-    m_drive.setPose(m_autoPath.getStartingDifferentialPose());
-    DriverStation.reportWarning(m_autoPath.getStartingDifferentialPose().toString(), false);
+    if (!m_drive.poseWasSet()) {
+      m_drive.setPose(m_autoPath.getStartingDifferentialPose());
+      DriverStation.reportWarning(m_autoPath.getStartingDifferentialPose().toString(), false);
+    }
+
+    // DEBUG Trajectory //////////////////////////////////////////////
+    Trajectory adjustedTrajectory = TrajectoryGenerator.generateTrajectory(
+        m_autoPath.getPathPoses(),
+        new TrajectoryConfig(
+            m_autoPath.getGlobalConstraints().getMaxVelocityMps(),
+            m_autoPath.getGlobalConstraints().getMaxAccelerationMpsSq()));
+    Logger.recordOutput("Auto/DriveTrajectory/TargetTrajectory", adjustedTrajectory);
+    /////////////////////////////////////////////////////////////////
 
     m_drive.clearTurnPIDAccumulation();
     DriverStation.reportWarning("Running path for " + DriverStation.getAlliance().toString(), false);
@@ -72,11 +93,12 @@ public class DriveTrajectoryTask extends Task {
   @Override
   public void update() {
     State goal = m_autoTrajectory.sample(m_runningTimer.get());
+    if (m_autoPath.isReversed()) {
+      goal = goal.reverse();
+    }
     ChassisSpeeds chassisSpeeds = m_driveController.calculateRobotRelativeSpeeds(m_drive.getPose(), goal);
 
-    m_drive.drive(
-        chassisSpeeds.vxMetersPerSecond,
-        chassisSpeeds.omegaRadiansPerSecond);
+    m_drive.drive(chassisSpeeds);
 
     m_isFinished |= m_runningTimer.get() >= m_autoTrajectory.getTotalTimeSeconds();
 
