@@ -111,7 +111,7 @@ public class DriveTrajectoryTask extends Task {
       m_driveController.calculateRobotRelativeSpeeds(m_drive.getPose(), goal_start);
       m_driveController.calculateRobotRelativeSpeeds(m_drive.getPose(), goal_start);
     }
-    Logger.recordOutput("Auto/DriveTrajectory/dTime", );
+    // Logger.recordOutput("Auto/DriveTrajectory/dTime", );
     Logger.recordOutput("Auto/DriveTrajectory/Time", m_runningTimer.get());
     Logger.recordOutput("Auto/DriveTrajectory/TimeRel", m_runningTimer.get() - mTimeStart);
 
