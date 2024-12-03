@@ -10,6 +10,7 @@ import java.util.List;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -93,7 +94,9 @@ public class Robot extends LoggedRobot {
     updateSim();
 
     // Used by sysid
-    // CommandScheduler.getInstance().run();
+    if (this.isTestEnabled()){
+      CommandScheduler.getInstance().run();
+    }
   }
 
   @Override
@@ -262,7 +265,9 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("ProjectName", "Flipside"); // Set a metadata value
 
     if (isReal()) {
-      // TODO: Add the next line pack with a USB stick
+      new WPILOGWriter(); // Log to the RoboRIO
+
+      // TODO: Add the next line back with a USB stick
       // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
       Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
       new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging

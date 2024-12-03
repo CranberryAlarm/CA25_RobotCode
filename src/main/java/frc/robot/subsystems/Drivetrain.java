@@ -58,7 +58,7 @@ public class Drivetrain extends Subsystem {
 
   private static final double kSlowModeRotScale = 0.1;
   private static final double kSpeedModeScale = 2.0;
-  private static final double kTrackWidth = Units.inchesToMeters(22.0);
+  private static final double kTrackWidth = Units.inchesToMeters(20.75);
   private static final double kWheelRadius = Units.inchesToMeters(3.0);
   private static final double kGearRatio = 10.71;
   private static final double kMetersPerRev = (2.0 * Math.PI * kWheelRadius) / kGearRatio;
@@ -88,9 +88,9 @@ public class Drivetrain extends Subsystem {
   private boolean mPoseWasSet = false;
 
   private final SimpleMotorFeedforward mLeftFeedforward = new SimpleMotorFeedforward(Constants.Drive.kS,
-      Constants.Drive.kV);
+      Constants.Drive.kV, Constants.Drive.kA);
   private final SimpleMotorFeedforward mRightFeedforward = new SimpleMotorFeedforward(Constants.Drive.kS,
-      Constants.Drive.kV);
+      Constants.Drive.kV, Constants.Drive.kA);
 
   /*********
    * SysId *
@@ -295,16 +295,13 @@ public class Drivetrain extends Subsystem {
 
   /** Resets robot odometry. */
   public void resetOdometry(Pose2d pose) {
-    mPoseWasSet = true;
-
-    mLeftEncoder.setPosition(0.0);
-    mRightEncoder.setPosition(0.0);
+    // mPoseWasSet = true;
     mDrivetrainSimulator.setPose(pose);
 
     mOdometry.resetPosition(
         mGyro.getRotation2d(),
-        0.0,
-        0.0,
+        mLeftEncoder.getPosition(),
+        mRightEncoder.getPosition(),
         pose);
   }
 
@@ -384,7 +381,9 @@ public class Drivetrain extends Subsystem {
   @Override
   public void outputTelemetry() {
     putNumber("leftVelocitySetPoint", mPeriodicIO.diffWheelSpeeds.leftMetersPerSecond);
+    putNumber("leftVelocityError", mPeriodicIO.diffWheelSpeeds.leftMetersPerSecond - mLeftEncoder.getVelocity());
     putNumber("rightVelocitySetPoint", mPeriodicIO.diffWheelSpeeds.rightMetersPerSecond);
+    putNumber("rightVelocityError", mPeriodicIO.diffWheelSpeeds.rightMetersPerSecond - mRightEncoder.getVelocity());
     putNumber("leftVelocity", mLeftEncoder.getVelocity());
     putNumber("rightVelocity", mRightEncoder.getVelocity());
     putNumber("leftMeters", mLeftEncoder.getPosition());
