@@ -211,12 +211,12 @@ public class Drivetrain extends Subsystem {
               // consider the entire group to be one motor.
               log.motor("drive-right")
                   .voltage(m_appliedVoltage.mut_replace(
-                      -mRightLeader.getAppliedOutput() * RobotController
+                      mRightLeader.getAppliedOutput() * RobotController
                           .getBatteryVoltage(),
                       Volts))
-                  .linearPosition(m_distance.mut_replace(-mRightEncoder.getPosition(), Meters))
+                  .linearPosition(m_distance.mut_replace(mRightEncoder.getPosition(), Meters))
                   .linearVelocity(
-                      m_velocity.mut_replace(-mRightEncoder.getVelocity(), MetersPerSecond));
+                      m_velocity.mut_replace(mRightEncoder.getVelocity(), MetersPerSecond));
             },
             // Tell SysId to make generated commands require this subsystem, suffix test
             // state in WPILog with this subsystem's name ("drive")
@@ -282,7 +282,7 @@ public class Drivetrain extends Subsystem {
 
   /** Update robot odometry. */
   public void updateOdometry() {
-    mOdometry.update(mGyro.getRotation2d(), mLeftEncoder.getPosition(), -mRightEncoder.getPosition());
+    mOdometry.update(mGyro.getRotation2d(), mLeftEncoder.getPosition(), mRightEncoder.getPosition());
   }
 
   /** Resets robot odometry. */
@@ -308,14 +308,14 @@ public class Drivetrain extends Subsystem {
     mOdometry.resetPosition(
         mGyro.getRotation2d(),
         mLeftEncoder.getPosition(),
-        -mRightEncoder.getPosition(),
+        mRightEncoder.getPosition(),
         pose);
   }
 
   public ChassisSpeeds getCurrentSpeeds() {
     DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(
         mLeftEncoder.getVelocity(),
-        -mRightEncoder.getVelocity());
+        mRightEncoder.getVelocity());
 
     return mKinematics.toChassisSpeeds(wheelSpeeds);
   }
@@ -344,7 +344,7 @@ public class Drivetrain extends Subsystem {
     var rightFeedforward = mRightFeedforward.calculate(mPeriodicIO.diffWheelSpeeds.rightMetersPerSecond);
     double leftOutput = mLeftPIDController.calculate(mLeftEncoder.getVelocity(),
         mPeriodicIO.diffWheelSpeeds.leftMetersPerSecond);
-    double rightOutput = mRightPIDController.calculate(-mRightEncoder.getVelocity(),
+    double rightOutput = mRightPIDController.calculate(mRightEncoder.getVelocity(),
         mPeriodicIO.diffWheelSpeeds.rightMetersPerSecond);
 
     mPeriodicIO.leftVoltage = leftOutput + leftFeedforward;
