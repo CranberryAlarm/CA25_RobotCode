@@ -4,26 +4,22 @@ import java.nio.file.Path;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.pathplanner.lib.controllers.PPRamseteController;
+import com.pathplanner.lib.controllers.PPLTVController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.path.PathPlannerTrajectory.State;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotTelemetry;
-import frc.robot.simulation.Field;
 import frc.robot.subsystems.Drivetrain;
 
 public class DriveTrajectoryTask extends Task {
@@ -32,11 +28,10 @@ public class DriveTrajectoryTask extends Task {
   private boolean m_isFinished = false;
   private String m_smartDashboardKey = "DriveTrajectoryTask/";
   private PathPlannerPath m_autoPath = null;
-  private Field2d field = Field.getInstance();
 
   private final Timer m_runningTimer = new Timer();
-  private PPRamseteController m_driveController;
-  // private PPLTVController m_driveController;
+  // private PPRamseteController m_driveController;
+  private PPLTVController m_driveController;
 
   public DriveTrajectoryTask(String pathName) {
     m_drive = Drivetrain.getInstance();
@@ -73,9 +68,16 @@ public class DriveTrajectoryTask extends Task {
       RobotTelemetry.print("===== PATH IS REVERSED =====");
     }
 
+    RobotTelemetry.print(VecBuilder.fill(m_autoPath.getGlobalConstraints().getMaxVelocityMps(), m_autoPath.getGlobalConstraints().getMaxAngularVelocityRps()));
+
+    m_driveController = new PPLTVController(
+        VecBuilder.fill(0.0625, 0.0625, 0.125),
+        VecBuilder.fill(m_autoPath.getGlobalConstraints().getMaxVelocityMps(), 2.0),
+        0.02,
+        m_autoPath.getGlobalConstraints().getMaxVelocityMps());
+
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/trajectories/ramsete.html
-    // m_driveController = new PPLTVController(0.02, 1.0);
-    m_driveController = new PPRamseteController(2, 0.7);
+    // m_driveController = new PPRamseteController(2, 0.7);
   }
 
   @Override
@@ -96,31 +98,32 @@ public class DriveTrajectoryTask extends Task {
     }
     Rotation2d headingError = currentHeading.minus(targetHeading);
 
-    boolean onHeading =
-        Math.hypot(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond) < 0.25
-            && Math.abs(headingError.getDegrees()) < 30;
+    boolean onHeading = Math.hypot(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond) < 0.25
+        && Math.abs(headingError.getDegrees()) < 1;
 
-    boolean onStartPose =
-        currentPose.getTranslation().getDistance(m_autoPath.getPoint(0).position) < 0.25;
+    boolean onStartPose = currentPose.getTranslation().getDistance(m_autoPath.getPoint(0).position) < 0.25;
 
     boolean shouldReplan = !onStartPose || !onHeading;
 
+    Logger.recordOutput("Auto/DriveTrajectory/shouldReplan", shouldReplan);
+
     if (shouldReplan) {
-      replanPath(currentPose, currentSpeeds);
+      // TODO: maybe do this later?
+      // ...
+      // Or maybe not...
+      // replanPath(currentPose, currentSpeeds);
     }
 
     // DEBUG Trajectory //////////////////////////////////////////////
-    Trajectory adjustedTrajectory = TrajectoryGenerator.generateTrajectory(
-        m_autoPath.getPathPoses(),
-        new TrajectoryConfig(
-            m_autoPath.getGlobalConstraints().getMaxVelocityMps(),
-            m_autoPath.getGlobalConstraints().getMaxAccelerationMpsSq()));
-
-    if (shouldReplan) {
-      Logger.recordOutput("Auto/DriveTrajectory/ReplannedTrajectory", adjustedTrajectory);
-    } else {
-     Logger.recordOutput("Auto/DriveTrajectory/TargetTrajectory", adjustedTrajectory);
-    }
+    // Trajectory adjustedTrajectory = TrajectoryGenerator.generateTrajectory(
+    //     m_autoPath.getPathPoses(),
+    //     new TrajectoryConfig(
+    //         m_autoPath.getGlobalConstraints().getMaxVelocityMps(),
+    //         m_autoPath.getGlobalConstraints().getMaxAccelerationMpsSq()));
+    // Logger.recordOutput("Auto/DriveTrajectory/TargetTrajectory", adjustedTrajectory);
+    // if (shouldReplan) {
+    //   Logger.recordOutput("Auto/DriveTrajectory/ReplannedTrajectory", adjustedTrajectory);
+    // }
     /////////////////////////////////////////////////////////////////
 
     m_drive.clearTurnPIDAccumulation();
@@ -130,11 +133,8 @@ public class DriveTrajectoryTask extends Task {
     m_runningTimer.start();
   }
 
-  double mTimeStart;
-
   @Override
   public void update() {
-
     State goal = m_autoTrajectory.sample(m_runningTimer.get());
     if (m_autoPath.isReversed()) {
       goal = goal.reverse();
@@ -184,7 +184,8 @@ public class DriveTrajectoryTask extends Task {
   }
 
   private void replanPath(Pose2d currentPose, ChassisSpeeds currentSpeeds) {
-    // m_autoPath = m_autoPath.replan(currentPose, currentSpeeds);
+    // NOTE: This dies if this is the first path
+    m_autoPath = m_autoPath.replan(currentPose, currentSpeeds);
     m_autoTrajectory = m_autoPath.getTrajectory(currentSpeeds, currentPose.getRotation());
   }
 }
