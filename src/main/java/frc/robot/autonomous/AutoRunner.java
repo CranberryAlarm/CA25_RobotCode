@@ -5,6 +5,7 @@ import frc.robot.autonomous.modes.AutoModeBase;
 import frc.robot.autonomous.modes.DefaultMode;
 import frc.robot.autonomous.modes.DoNothingMode;
 import frc.robot.autonomous.modes.LongCook;
+import frc.robot.autonomous.modes.LongFakeAuto;
 import frc.robot.autonomous.modes.PPTestMode;
 import frc.robot.autonomous.modes.StressTest;
 import frc.robot.autonomous.tasks.Task;
@@ -20,7 +21,8 @@ public class AutoRunner {
     DEFAULT,
     PP_TEST_MODE,
     STRESS_TEST,
-    LONG_COOK
+    LONG_COOK,
+    LONG_FAKE_AUTO
   }
 
   public static AutoRunner getInstance() {
@@ -71,6 +73,9 @@ public class AutoRunner {
         break;
       case LONG_COOK:
         m_autoMode = new LongCook();
+        break;
+      case LONG_FAKE_AUTO:
+        m_autoMode = new LongFakeAuto();
         break;
       default:
         RobotTelemetry.print("Invalid auto mode selected. Defaulting to do nothing.");

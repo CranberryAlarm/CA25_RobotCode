@@ -72,7 +72,7 @@ public class DriveTrajectoryTask extends Task {
     // double translationErrorTolerance = m_autoPath.getGlobalConstraints().getMaxVelocityMps() * 0.0625;
 
     m_driveController = new PPLTVController(
-        VecBuilder.fill(0.125, 0.125, rotationErrorTolerance),
+        VecBuilder.fill(0.25, 0.25, 1.0),
         VecBuilder.fill(1.0, 2.0),
         0.02,
         m_autoPath.getGlobalConstraints().getMaxVelocityMps());
