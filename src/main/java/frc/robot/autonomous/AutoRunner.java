@@ -1,5 +1,6 @@
 package frc.robot.autonomous;
 
+import frc.robot.RobotTelemetry;
 import frc.robot.autonomous.modes.AutoModeBase;
 import frc.robot.autonomous.modes.DefaultMode;
 import frc.robot.autonomous.modes.DoNothingMode;
@@ -47,9 +48,9 @@ public class AutoRunner {
   }
 
   private void onAutoChange(String newAuto) {
-    System.out.println("AUTO CHANGED");
+    RobotTelemetry.print("AUTO CHANGED");
     m_selectedAuto = AutoMode.valueOf(newAuto);
-    System.out.println(m_selectedAuto);
+    RobotTelemetry.print(m_selectedAuto);
 
     switch (m_selectedAuto) {
       case DO_NOTHING:
@@ -62,13 +63,13 @@ public class AutoRunner {
         m_autoMode = new PPTestMode();
         break;
       default:
-        System.out.println("Invalid auto mode selected. Defaulting to do nothing.");
+        RobotTelemetry.print("Invalid auto mode selected. Defaulting to do nothing.");
         m_autoMode = new DoNothingMode();
         break;
     }
 
     m_autoMode.queueTasks();
 
-    // m_autoMode.setStartingPose();
+    m_autoMode.setStartingPose();
   }
 }

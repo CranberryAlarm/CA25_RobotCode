@@ -210,6 +210,8 @@ public class Robot extends LoggedRobot {
     m_leds.rainbow();
     speed = 0;
     m_allSubsystems.forEach(subsystem -> subsystem.stop());
+
+    // TODO: reset the auto state stuff if we're in dev mode
   }
 
   @Override

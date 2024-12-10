@@ -1,14 +1,16 @@
 package frc.robot.autonomous.tasks;
 
+import frc.robot.RobotTelemetry;
+
 public class DoNothingTask extends Task {
   @Override
   public void start() {
-    System.out.println("Starting do nothing auto...");
+    RobotTelemetry.print("Starting do nothing auto...");
   }
 
   @Override
   public void update() {
-    System.out.println("Do nothing auto complete");
+    RobotTelemetry.print("Do nothing auto complete");
   }
 
   @Override

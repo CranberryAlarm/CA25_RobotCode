@@ -46,15 +46,9 @@ public abstract class AutoModeBase {
     // If there isn't one, default to something visible
     if (startingPose == null) {
       startingPose = Constants.Field.blueCenterPose2d;
-
-      // Default to the center of the field
-      // startingPose = new Pose2d(Field.k_width / 2, Field.k_length / 2, new
-      // Rotation2d(0));
     }
 
     Drivetrain m_drive = Drivetrain.getInstance();
-    // m_drive.resetOdometry(startingPose);
-    // mGyro.reset();
     m_drive.resetOdometry(startingPose);
   };
 }

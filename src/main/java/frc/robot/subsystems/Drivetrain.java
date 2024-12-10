@@ -190,7 +190,7 @@ public class Drivetrain extends Subsystem {
         new SysIdRoutine.Mechanism(
             // Tell SysId how to plumb the driving voltage to the motors.
             (Measure<Voltage> volts) -> {
-              // System.out.println("OPE:" + volts);
+              // RobotTelemetry.print("OPE:" + volts);
               mLeftLeader.setVoltage(volts.in(Volts));
               mRightLeader.setVoltage(volts.in(Volts));
             },
