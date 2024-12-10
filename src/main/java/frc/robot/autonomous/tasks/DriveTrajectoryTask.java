@@ -68,11 +68,12 @@ public class DriveTrajectoryTask extends Task {
       RobotTelemetry.print("===== PATH IS REVERSED =====");
     }
 
-    RobotTelemetry.print(VecBuilder.fill(m_autoPath.getGlobalConstraints().getMaxVelocityMps(), m_autoPath.getGlobalConstraints().getMaxAngularVelocityRps()));
+    double rotationErrorTolerance = Math.pow(m_autoPath.getGlobalConstraints().getMaxVelocityMps(), 1.25) * 0.25;
+    // double translationErrorTolerance = m_autoPath.getGlobalConstraints().getMaxVelocityMps() * 0.0625;
 
     m_driveController = new PPLTVController(
-        VecBuilder.fill(0.0625, 0.0625, 0.125),
-        VecBuilder.fill(m_autoPath.getGlobalConstraints().getMaxVelocityMps(), 2.0),
+        VecBuilder.fill(0.125, 0.125, rotationErrorTolerance),
+        VecBuilder.fill(1.0, 2.0),
         0.02,
         m_autoPath.getGlobalConstraints().getMaxVelocityMps());
 
