@@ -11,7 +11,7 @@
     "javaDependencies": [
         {
             "groupId": "com.kauailabs.navx.frc",
-            "artifactId": "navx-frc-java",
+            "artifactId": "navx_frc-java",
             "version": "2025.1.1-beta-1"
         }
     ],
