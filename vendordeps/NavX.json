@@ -1,18 +1,18 @@
 {
     "fileName": "NavX.json",
     "name": "NavX",
-    "version": "2024.1.0",
+    "version": "2025.1.1-beta-1",
     "uuid": "cb311d09-36e9-4143-a032-55bb2b94443b",
-    "frcYear": "2024",
+    "frcYear": "2025",
     "mavenUrls": [
-        "https://dev.studica.com/maven/release/2024/"
+        "https://dev.studica.com/maven/release/2025/"
     ],
-    "jsonUrl": "https://dev.studica.com/releases/2024/NavX.json",
+    "jsonUrl": "https://dev.studica.com/releases/2025/NavX.json",
     "javaDependencies": [
         {
             "groupId": "com.kauailabs.navx.frc",
             "artifactId": "navx-frc-java",
-            "version": "2024.1.0"
+            "version": "2025.1.1-beta-1"
         }
     ],
     "jniDependencies": [],
@@ -20,7 +20,7 @@
         {
             "groupId": "com.kauailabs.navx.frc",
             "artifactId": "navx-frc-cpp",
-            "version": "2024.1.0",
+            "version": "2025.1.1-beta-1",
             "headerClassifier": "headers",
             "sourcesClassifier": "sources",
             "sharedLibrary": false,
@@ -28,7 +28,6 @@
             "skipInvalidPlatforms": true,
             "binaryPlatforms": [
                 "linuxathena",
-                "linuxraspbian",
                 "linuxarm32",
                 "linuxarm64",
                 "linuxx86-64",
