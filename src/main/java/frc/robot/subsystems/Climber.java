@@ -29,9 +29,6 @@ public class Climber extends Subsystem {
   private SparkMax mLeftClimberMotor;
   private SparkMax mRightClimberMotor;
 
-  private SparkClosedLoopController mLeftClimberPID;
-  private SparkClosedLoopController mRightClimberPID;
-
   private RelativeEncoder mLeftClimberEncoder;
   private RelativeEncoder mRightClimberEncoder;
 
@@ -64,6 +61,9 @@ public class Climber extends Subsystem {
     mRightClimberMotor.configure(climberRightConfig, 
                                 ResetMode.kResetSafeParameters, 
                                 PersistMode.kPersistParameters);
+
+    mLeftClimberEncoder = mLeftClimberMotor.getEncoder();
+    mRightClimberEncoder = mRightClimberMotor.getEncoder();
   }
 
   private static class PeriodicIO {
@@ -79,8 +79,8 @@ public class Climber extends Subsystem {
 
   @Override
   public void writePeriodicOutputs() {
-    mLeftClimberPID.setReference(mPeriodicIO.climber_left_speed, ControlType.kVelocity);
-    mRightClimberPID.setReference(mPeriodicIO.climber_right_speed, ControlType.kVelocity);
+    mLeftClimberMotor.getClosedLoopController().setReference(mPeriodicIO.climber_left_speed, ControlType.kVelocity);
+    mRightClimberMotor.getClosedLoopController().setReference(mPeriodicIO.climber_right_speed, ControlType.kVelocity);
   }
 
   @Override
