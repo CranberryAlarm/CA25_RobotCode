@@ -5,22 +5,15 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.nio.file.Path;
 
-<<<<<<< HEAD
-import com.pathplanner.lib.config.RobotConfig;
-=======
 import org.littletonrobotics.junction.Logger;
 
->>>>>>> f3bf425a7c52e7a3682eddec83628bea12e99f0c
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 
-<<<<<<< HEAD
-import edu.wpi.first.math.controller.RamseteController;
-=======
 import edu.wpi.first.math.VecBuilder;
->>>>>>> f3bf425a7c52e7a3682eddec83628bea12e99f0c
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -84,14 +77,14 @@ public class DriveTrajectoryTask extends Task {
       RobotTelemetry.print("===== PATH IS REVERSED =====");
     }
 
-    double rotationErrorTolerance = Math.pow(m_autoPath.getGlobalConstraints().getMaxVelocityMps(), 1.25) * 0.25;
+    double rotationErrorTolerance = Math.pow(m_autoPath.getGlobalConstraints().maxVelocityMPS(), 1.25) * 0.25;
     // double translationErrorTolerance = m_autoPath.getGlobalConstraints().getMaxVelocityMps() * 0.0625;
 
     m_driveController = new PPLTVController(
         VecBuilder.fill(0.25, 0.25, 1.0),
         VecBuilder.fill(1.0, 2.0),
         0.02,
-        m_autoPath.getGlobalConstraints().getMaxVelocityMps());
+        m_autoPath.getGlobalConstraints().maxVelocityMPS());
 
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/trajectories/ramsete.html
     // m_driveController = new PPRamseteController(2, 0.7);
@@ -162,7 +155,7 @@ public class DriveTrajectoryTask extends Task {
 
     m_isFinished |= m_runningTimer.hasElapsed(m_autoTrajectory.getTotalTimeSeconds());
 
-    Logger.recordOutput("Auto/DriveTrajectory/TargetPose", goal.getDifferentialPose());
+    Logger.recordOutput("Auto/DriveTrajectory/TargetPose", goal.pose);
     Logger.recordOutput("Auto/DriveTrajectory/CurrentPose", m_drive.getPose());
 
     SmartDashboard.putNumber(m_smartDashboardKey + "vx", chassisSpeeds.vxMetersPerSecond);
@@ -193,11 +186,5 @@ public class DriveTrajectoryTask extends Task {
   public void done() {
     RobotTelemetry.print("Auto trajectory done");
     m_drive.drive(0, 0);
-  }
-
-  private void replanPath(Pose2d currentPose, ChassisSpeeds currentSpeeds) {
-    // NOTE: This dies if this is the first path
-    m_autoPath = m_autoPath.replan(currentPose, currentSpeeds);
-    m_autoTrajectory = m_autoPath.getTrajectory(currentSpeeds, currentPose.getRotation());
   }
 }
