@@ -43,14 +43,14 @@ public class DriveTrajectoryTask extends Task {
         filePath = Filesystem.getDeployDirectory().toPath().resolve("paths/" + pathName);
       } else {
         RobotTelemetry.print("Running in simulation!");
-        filePath = Filesystem.getLaunchDirectory().toPath().resolve("PathWeaver/output/" + pathName);
+        filePath = Filesystem.getDeployDirectory().toPath().resolve("pathplanner/paths/" + pathName);
       }
 
       RobotTelemetry.print("Loading path from:\n" + filePath.toString());
       m_autoPath = PathPlannerPath.fromPathFile(pathName);
       // RobotTelemetry.print(m_autoPath.numPoints());
 
-      if (DriverStation.getAlliance().get() == Alliance.Red) {
+      if (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
         RobotTelemetry.print("Translating path for Red Alliance!");
         m_autoPath = m_autoPath.flipPath();
       }
