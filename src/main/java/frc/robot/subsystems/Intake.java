@@ -1,7 +1,14 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
+import javax.annotation.processing.ProcessingEnvironment;
+
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
@@ -36,20 +43,24 @@ public class Intake extends Subsystem {
     return mInstance;
   }
 
-  private CANSparkMax mIntakeMotor;
-  private CANSparkMax mPivotMotor;
+  private SparkMax mIntakeMotor;
+  private SparkMax mPivotMotor;
 
   private Intake() {
     super("Intake");
 
-    mIntakeMotor = new CANSparkMax(Constants.Intake.kIntakeMotorId, MotorType.kBrushless);
-    mIntakeMotor.restoreFactoryDefaults();
-    mIntakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    var intakeConfig = new SparkMaxConfig();
+    intakeConfig.idleMode(IdleMode.kCoast);
 
-    mPivotMotor = new CANSparkMax(Constants.Intake.kPivotMotorId, MotorType.kBrushless);
-    mPivotMotor.restoreFactoryDefaults();
-    mPivotMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    mPivotMotor.setSmartCurrentLimit(10);
+    mIntakeMotor = new SparkMax(Constants.Intake.kIntakeMotorId, MotorType.kBrushless);
+    mIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    var pivotConfig = new SparkMaxConfig();
+    pivotConfig.idleMode(IdleMode.kBrake);
+    pivotConfig.smartCurrentLimit(10);
+
+    mPivotMotor = new SparkMax(Constants.Intake.kPivotMotorId, MotorType.kBrushless);
+    mPivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     m_periodicIO = new PeriodicIO();
   }
@@ -117,7 +128,7 @@ public class Intake extends Subsystem {
   public void outputTelemetry() {
     putNumber("Speed", intakeStateToSpeed(m_periodicIO.intake_state));
     putNumber("Pivot/Abs Enc (get)", m_pivotEncoder.get());
-    putNumber("Pivot/Abs Enc (getAbsolutePosition)", m_pivotEncoder.getAbsolutePosition());
+    // putNumber("Pivot/Abs Enc (getAbsolutePosition)", m_pivotEncoder.getAbsolutePosition());
     putNumber("Pivot/Abs Enc (getPivotAngleDegrees)", getPivotAngleDegrees());
     putNumber("Pivot/Setpoint", pivotTargetToAngle(m_periodicIO.pivot_target));
 
@@ -175,7 +186,7 @@ public class Intake extends Subsystem {
   }
 
   public double getPivotAngleDegrees() {
-    double value = m_pivotEncoder.getAbsolutePosition() -
+    double value = m_pivotEncoder.get() -
         Constants.Intake.k_pivotEncoderOffset + 0.5;
 
     return Units.rotationsToDegrees(Helpers.modRotations(value));

@@ -1,14 +1,22 @@
 package frc.robot.autonomous.tasks;
 
+import static edu.wpi.first.units.Units.Kilogram;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import java.nio.file.Path;
 
-import com.pathplanner.lib.controllers.PPRamseteController;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPLTVController;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.path.PathPlannerTrajectory.State;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 
+import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -24,7 +32,7 @@ public class DriveTrajectoryTask extends Task {
   private PathPlannerPath m_autoPath = null;
 
   private final Timer m_runningTimer = new Timer();
-  private PPRamseteController m_driveController;
+  private PPLTVController m_driveController;
 
   public DriveTrajectoryTask(String pathName, double maxSpeed, double maxAcceleration) {
     m_drive = Drivetrain.getInstance();
@@ -50,10 +58,13 @@ public class DriveTrajectoryTask extends Task {
     m_autoTrajectory = new PathPlannerTrajectory(
         m_autoPath,
         new ChassisSpeeds(),
-        m_drive.getPose().getRotation());
+        m_drive.getPose().getRotation(),
+        m_drive.getRobotConfig()
+        );
 
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/trajectories/ramsete.html
-    m_driveController = new PPRamseteController(2.0, 0.7);
+    // TODO: Tune these values
+    m_driveController = new PPLTVController(0.1);
   }
 
   @Override
@@ -71,7 +82,7 @@ public class DriveTrajectoryTask extends Task {
 
   @Override
   public void update() {
-    State goal = m_autoTrajectory.sample(m_runningTimer.get());
+    PathPlannerTrajectoryState goal = m_autoTrajectory.sample(m_runningTimer.get());
     ChassisSpeeds chassisSpeeds = m_driveController.calculateRobotRelativeSpeeds(m_drive.getPose(), goal);
 
     m_drive.drive(
@@ -88,15 +99,10 @@ public class DriveTrajectoryTask extends Task {
   @Override
   public void updateSim() {
     if (!RobotBase.isReal()) {
-      PathPlannerTrajectory.State autoState = (PathPlannerTrajectory.State) m_autoTrajectory
+      PathPlannerTrajectoryState autoState = m_autoTrajectory
           .sample(m_runningTimer.get());
 
-      Pose2d targetPose2d = new Pose2d(
-          autoState.positionMeters.getX(),
-          autoState.positionMeters.getY(),
-          autoState.heading);
-
-      m_drive.setPose(targetPose2d);
+      m_drive.setPose(autoState.pose);
     }
   }
 

@@ -4,20 +4,34 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Kilogram;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.ReplanningConfig;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPLTVController;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -32,11 +46,18 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
-import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Velocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -91,18 +112,34 @@ public class Drivetrain extends Subsystem {
   private final SimpleMotorFeedforward mRightFeedforward = new SimpleMotorFeedforward(Constants.Drive.kS,
       Constants.Drive.kV);
 
+  private final ModuleConfig moduleConfig = new ModuleConfig(
+    Distance.ofBaseUnits(kWheelRadius, Meters), // wheel radius
+    LinearVelocity.ofBaseUnits(kMaxSpeed, MetersPerSecond),
+    1.0, // coefficient of friction (1.0 is a placeholder value)
+    DCMotor.getCIM(2),
+    Current.ofBaseUnits(1, Amps), // Another placeholder
+    2
+  );
+
+  private final RobotConfig robotConfig = new RobotConfig(
+    Mass.ofBaseUnits(30, Kilogram),
+    MomentOfInertia.ofBaseUnits(1, KilogramSquareMeters),
+    moduleConfig,
+    Distance.ofBaseUnits(mKinematics.trackWidthMeters, Meters)
+  );
+
   /*********
    * SysId *
    *********/
 
   // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
-  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  private final MutVoltage m_appliedVoltage = Volts.of(0).mutableCopy();
   // Mutable holder for unit-safe linear distance values, persisted to avoid
   // reallocation.
-  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  private final MutDistance m_distance = Meters.of(0).mutableCopy();
   // Mutable holder for unit-safe linear velocity values, persisted to avoid
   // reallocation.
-  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+  private final MutLinearVelocity m_velocity = MetersPerSecond.of(0).mutableCopy();
 
   private final SysIdRoutine mSysIdRoutine;
 
@@ -131,36 +168,50 @@ public class Drivetrain extends Subsystem {
 
     mGyro.reset();
 
-    mLeftLeader.restoreFactoryDefaults();
-    mLeftLeader.setIdleMode(IdleMode.kCoast);
-    mLeftFollower.restoreFactoryDefaults();
-    mLeftFollower.setIdleMode(IdleMode.kCoast);
-    mRightLeader.restoreFactoryDefaults();
-    mRightLeader.setIdleMode(IdleMode.kCoast);
-    mRightFollower.restoreFactoryDefaults();
-    mRightFollower.setIdleMode(IdleMode.kCoast);
+    var globalConfig = new SparkMaxConfig()
+                            .idleMode(IdleMode.kCoast);
+
+    var encoderConfig = new SparkMaxConfig()
+    .encoder
+    // The "native units" for the SparkMax is motor rotations:
+    // Conversion factor = (distance traveled per motor shaft rotation)
+    .positionConversionFactor(kMetersPerRev)
+
+    // The "native units" for the SparkMax is RPM:
+    // Conversion factor = (distance traveled per motor shaft rotation) / (60
+    // seconds)
+    .velocityConversionFactor(kMetersPerRev / 60);
+
+    var leftLeaderConfig = new SparkMaxConfig()
+                               .apply(globalConfig)
+                               .apply(encoderConfig);
 
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    mRightLeader.setInverted(true);
+    var rightLeaderConfig = new SparkMaxConfig()
+                                .apply(globalConfig)
+                                .apply(encoderConfig)
+                                .inverted(true);
+    
+                                
+    var leftFollowerConfig = new SparkMaxConfig()
+                                 .apply(globalConfig)
+                                 .follow(mLeftLeader);
 
-    // Set the leader/follower relationship for the left and right sides
-    mLeftFollower.follow(mLeftLeader, mLeftLeader.getInverted());
-    mRightFollower.follow(mRightLeader, mRightLeader.getInverted());
+    var rightFollowerConfig = new SparkMaxConfig()
+                                .apply(globalConfig)
+                                .apply(rightLeaderConfig)
+                                .follow(mRightLeader);
+
+
+    mLeftLeader.configure(leftLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    mLeftFollower.configure(leftFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    mRightLeader.configure(rightLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    mRightFollower.configure(rightFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     mLeftEncoder = mLeftLeader.getEncoder();
     mRightEncoder = mRightLeader.getEncoder();
-
-    // The "native units" for the SparkMax is motor rotations:
-    // Conversion factor = (distance traveled per motor shaft rotation)
-    mLeftEncoder.setPositionConversionFactor(kMetersPerRev);
-    mRightEncoder.setPositionConversionFactor(kMetersPerRev);
-    // The "native units" for the SparkMax is RPM:
-    // Conversion factor = (distance traveled per motor shaft rotation) / (60
-    // seconds)
-    mLeftEncoder.setVelocityConversionFactor(kMetersPerRev / 60);
-    mRightEncoder.setVelocityConversionFactor(kMetersPerRev / 60);
 
     mLeftEncoder.setPosition(0.0);
     mRightEncoder.setPosition(0.0);
@@ -171,19 +222,15 @@ public class Drivetrain extends Subsystem {
     mPeriodicIO = new PeriodicIO();
 
     // Configure AutoBuilder last
-    AutoBuilder.configureRamsete(
-        this::getPose, // Robot pose supplier
-        this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-        this::getCurrentSpeeds, // Current ChassisSpeeds supplier
-        this::drive, // Method that will drive the robot given ChassisSpeeds
-        new ReplanningConfig(), // Default path replanning config. See the API for the options here
-        new BooleanSupplier() {
-          @Override
-          public boolean getAsBoolean() {
-            return true;
-          }
-        }, // determines if paths should be flipped to the other side of the field
-        this // Reference to this subsystem to set requirements
+    AutoBuilder.configure(
+        (Supplier<Pose2d>) this::getPose, // Robot pose supplier
+        (Consumer<Pose2d>) this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+        (Supplier<ChassisSpeeds>) this::getCurrentSpeeds, // Current ChassisSpeeds supplier
+        (BiConsumer<ChassisSpeeds, DriveFeedforwards>) this::drive, // Method that will drive the robot given ChassisSpeeds
+        new PPLTVController(0.1),
+        robotConfig, // Robot configuration
+        (BooleanSupplier) () -> true, // determines if paths should be flipped to the other side of the field
+        new edu.wpi.first.wpilibj2.command.Subsystem[] { this }
     );
 
     mSysIdRoutine = new SysIdRoutine(
@@ -191,7 +238,7 @@ public class Drivetrain extends Subsystem {
         new SysIdRoutine.Config(),
         new SysIdRoutine.Mechanism(
             // Tell SysId how to plumb the driving voltage to the motors.
-            (Measure<Voltage> volts) -> {
+            (Voltage volts) -> {
               // System.out.println("OPE:" + volts);
               mLeftLeader.setVoltage(volts.in(Volts));
               mRightLeader.setVoltage(volts.in(Volts));
@@ -271,6 +318,11 @@ public class Drivetrain extends Subsystem {
     mPeriodicIO.diffWheelSpeeds = mKinematics.toWheelSpeeds(speeds);
   }
 
+  public void drive(ChassisSpeeds speeds, DriveFeedforwards feedforwards) {
+    // TODO: Implement feedforwards
+    drive(speeds);
+  }
+
   public void clearTurnPIDAccumulation() {
     mLeftPIDController.reset();
     mRightPIDController.reset();
@@ -318,6 +370,10 @@ public class Drivetrain extends Subsystem {
         -mRightEncoder.getVelocity());
 
     return mKinematics.toChassisSpeeds(wheelSpeeds);
+  }
+
+  public RobotConfig getRobotConfig() {
+    return robotConfig;
   }
 
   /** Update our simulation. This should be run every robot loop in simulation. */

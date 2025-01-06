@@ -1,10 +1,15 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
 import frc.robot.Constants;
 
@@ -21,11 +26,11 @@ public class Climber extends Subsystem {
     return mInstance;
   }
 
-  private CANSparkMax mLeftClimberMotor;
-  private CANSparkMax mRightClimberMotor;
+  private SparkMax mLeftClimberMotor;
+  private SparkMax mRightClimberMotor;
 
-  private SparkPIDController mLeftClimberPID;
-  private SparkPIDController mRightClimberPID;
+  private SparkClosedLoopController mLeftClimberPID;
+  private SparkClosedLoopController mRightClimberPID;
 
   private RelativeEncoder mLeftClimberEncoder;
   private RelativeEncoder mRightClimberEncoder;
@@ -35,34 +40,30 @@ public class Climber extends Subsystem {
 
     mPeriodicIO = new PeriodicIO();
 
-    mLeftClimberMotor = new CANSparkMax(Constants.kClimberLeftMotorId, MotorType.kBrushless);
-    mRightClimberMotor = new CANSparkMax(Constants.kClimberRightMotorId, MotorType.kBrushless);
+    mLeftClimberMotor = new SparkMax(Constants.kClimberLeftMotorId, MotorType.kBrushless);
+    mRightClimberMotor = new SparkMax(Constants.kClimberRightMotorId, MotorType.kBrushless);
 
-    mLeftClimberPID = mLeftClimberMotor.getPIDController();
-    mLeftClimberPID.setP(Constants.kClimberP);
-    mLeftClimberPID.setI(Constants.kClimberI);
-    mLeftClimberPID.setD(Constants.kClimberD);
-    mLeftClimberPID.setOutputRange(Constants.kClimberMinOutput, Constants.kClimberMaxOutput);
+    var climberConfig = new SparkMaxConfig();
+    climberConfig.closedLoop.pid(Constants.kClimberP, Constants.kClimberI, Constants.kClimberD)
+                            .minOutput(Constants.kClimberMinOutput)
+                            .maxOutput(Constants.kClimberMaxOutput);
 
-    mRightClimberPID = mRightClimberMotor.getPIDController();
-    mRightClimberPID.setP(Constants.kClimberP);
-    mRightClimberPID.setI(Constants.kClimberI);
-    mRightClimberPID.setD(Constants.kClimberD);
-    mRightClimberPID.setOutputRange(Constants.kClimberMinOutput, Constants.kClimberMaxOutput);
+    climberConfig.encoder.positionConversionFactor(Constants.kClimberGearRatio)
+                          .velocityConversionFactor(Constants.kClimberGearRatio);
 
-    mLeftClimberEncoder = mLeftClimberMotor.getEncoder();
-    mLeftClimberEncoder.setPositionConversionFactor(Constants.kClimberGearRatio);
-    mLeftClimberEncoder.setVelocityConversionFactor(Constants.kClimberGearRatio);
+    climberConfig.idleMode(IdleMode.kBrake);
 
-    mRightClimberEncoder = mRightClimberMotor.getEncoder();
-    mRightClimberEncoder.setPositionConversionFactor(Constants.kClimberGearRatio);
-    mRightClimberEncoder.setVelocityConversionFactor(Constants.kClimberGearRatio);
+    var climberRightConfig = new SparkMaxConfig()
+      .apply(climberConfig)
+      .inverted(true);  
 
-    mLeftClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    mRightClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    mLeftClimberMotor.configure(climberConfig, 
+                                ResetMode.kResetSafeParameters, 
+                                PersistMode.kPersistParameters);
 
-    mLeftClimberMotor.setInverted(false);
-    mRightClimberMotor.setInverted(true);
+    mRightClimberMotor.configure(climberRightConfig, 
+                                ResetMode.kResetSafeParameters, 
+                                PersistMode.kPersistParameters);
   }
 
   private static class PeriodicIO {
@@ -102,13 +103,17 @@ public class Climber extends Subsystem {
   /*---------------------------------- Custom Public Functions ----------------------------------*/
 
   public void setBrakeMode() {
-    mLeftClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    mRightClimberMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    var config = new SparkMaxConfig();
+    config.idleMode(IdleMode.kBrake);
+    mLeftClimberMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    mRightClimberMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   public void setCoastMode() {
-    mLeftClimberMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-    mRightClimberMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    var config = new SparkMaxConfig();
+    config.idleMode(IdleMode.kBrake);
+    mLeftClimberMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    mRightClimberMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   public void climb() {
