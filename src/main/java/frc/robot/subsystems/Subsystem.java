@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -67,27 +69,27 @@ public abstract class Subsystem extends SubsystemBase {
   public String baseSmartDashboardKey = "UnknownSubsystem/";
 
   public void putNumber(String key, double value) {
-    SmartDashboard.putNumber(baseSmartDashboardKey + "/" + key, value);
+    Logger.recordOutput(baseSmartDashboardKey + "/" + key, value);
   }
 
   public void putBoolean(String key, boolean value) {
-    SmartDashboard.putBoolean(baseSmartDashboardKey + "/" + key, value);
+    Logger.recordOutput(baseSmartDashboardKey + "/" + key, value);
   }
 
   public void putString(String key, String value) {
-    SmartDashboard.putString(baseSmartDashboardKey + "/" + key, value);
+    Logger.recordOutput(baseSmartDashboardKey + "/" + key, value);
   }
 
   public void putNumberArray(String key, double[] value) {
-    SmartDashboard.putNumberArray(baseSmartDashboardKey + "/" + key, value);
+    Logger.recordOutput(baseSmartDashboardKey + "/" + key, value);
   }
 
   public void putBooleanArray(String key, boolean[] value) {
-    SmartDashboard.putBooleanArray(baseSmartDashboardKey + "/" + key, value);
+    Logger.recordOutput(baseSmartDashboardKey + "/" + key, value);
   }
 
   public void putStringArray(String key, String[] value) {
-    SmartDashboard.putStringArray(baseSmartDashboardKey + "/" + key, value);
+    Logger.recordOutput(baseSmartDashboardKey + "/" + key, value);
   }
 
   public void putData(String key, Sendable value) {

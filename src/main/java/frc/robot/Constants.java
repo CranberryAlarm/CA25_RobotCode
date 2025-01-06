@@ -10,6 +10,43 @@ public class Constants {
     public static final double k_length = 28; // Inches
   }
 
+  public static class Elevator {
+    public static final int kElevatorLeftMotorId = 9;
+    public static final int kElevatorRightMotorId = 10;
+
+    public static final double kP = 0.1;
+    public static final double kI = 1e-8;
+    public static final double kD = 1;
+    public static final double kIZone = 0;
+    public static final double kFF = 0.0;
+
+    public static final int kMaxCurrent = 30;
+    public static final double kMaxPowerUp = 0.1;
+    public static final double kMaxPowerDown = 0.1;
+
+    public static final double kStowHeight = 0.0;
+    public static final double kL1Height = 0.0;
+    public static final double kL2Height = 0.0;
+    public static final double kL3Height = 0.0;
+    public static final double kL4Height = 52.6;
+    public static final double kMaxHeight = 56.2;
+    public static final double kGroundAlgaeHeight = 0.0;
+    public static final double kScoreAlgaeHeight = 0.0;
+    public static final double kLowAlgaeHeight = 0.0;
+    public static final double kHighAlgaeHeight = 0.0;
+  }
+
+  public static class Coral {
+    public static final int kLeftMotorId = 11;
+    public static final int kRightMotorId = 12;
+  }
+
+  public static class Algae {
+    public static final int kWristMotorId = 13;
+
+    public static final int kIntakeMotorId = 14;
+  }
+
   public static class Intake {
     // Motors
     public static final int kIntakeMotorId = 9;
@@ -69,12 +106,12 @@ public class Constants {
 
   // Drivetrain
   public static class Drive {
-    public static final double kP = 0.00085;//3.6954;//0.085;
-    public static final double kI = 0.0;//0.0;
-    public static final double kD = 0.0;//0.0;
+    public static final double kP = 0.00085;// 3.6954;//0.085;
+    public static final double kI = 0.0;// 0.0;
+    public static final double kD = 0.0;// 0.0;
 
-    public static final double kS = 0.1695;//0.01;
-    public static final double kV = 2.8559;//2.6;
+    public static final double kS = 0.1695;// 0.01;
+    public static final double kV = 2.8559;// 2.6;
     public static final double kA = 0.4864;
 
     public static final int kFLMotorId = 8;

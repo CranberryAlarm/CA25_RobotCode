@@ -65,7 +65,6 @@ public class Shooter extends Subsystem {
 
     mLeftShooterMotor.setInverted(true);
     mRightShooterMotor.setInverted(false);
-
   }
 
   private static class PeriodicIO {

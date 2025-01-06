@@ -21,11 +21,14 @@
             "/RealOutputs/Auto/DriveTrajectory/1-2-b",
             "/RealOutputs/Auto/DriveTrajectory/TargetPose/rotation",
             "/RealOutputs/Auto/DriveTrajectory/CurrentPose",
-            "/RealOutputs/Auto/DriveTrajectory/CurrentPose/rotation"
+            "/RealOutputs/Auto/DriveTrajectory/CurrentPose/rotation",
+            "/RealOutputs/Elevator",
+            "/RealOutputs/Elevator/Position",
+            "/RealOutputs/Elevator/Current"
           ]
         },
         "tabs": {
-          "selected": 2,
+          "selected": 3,
           "tabs": [
             {
               "type": 0,
@@ -78,7 +81,7 @@
                 "cameraPosition": [
                   8.846666903479488,
                   5.635495269604634,
-                  -2.048242193592743
+                  -2.0482421935927437
                 ],
                 "cameraTarget": [
                   4.77960094630555,
@@ -101,12 +104,12 @@
                   "fields": [
                     {
                       "key": "/RealOutputs/Auto/DriveTrajectory/TargetPose/rotation/value",
-                      "color": "#e5b31b",
+                      "color": "#2b66a2",
                       "show": true
                     },
                     {
                       "key": "/RealOutputs/Auto/DriveTrajectory/CurrentPose/rotation/value",
-                      "color": "#af2437",
+                      "color": "#e5b31b",
                       "show": true
                     }
                   ]
@@ -115,7 +118,7 @@
                   "fields": [
                     {
                       "key": "/RealOutputs/Auto/DriveTrajectory/shouldReplan",
-                      "color": "#2b66a2",
+                      "color": "#af2437",
                       "show": true
                     }
                   ]
@@ -129,7 +132,55 @@
                   "fields": []
                 }
               },
-              "title": "Line Graph"
+              "title": "PathPlanning"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "/RealOutputs/Elevator/Position/Current",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "/RealOutputs/Elevator/Position/Target",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "/RealOutputs/Elevator/Current/Left",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "/RealOutputs/Elevator/Current/Right",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Elevator"
             },
             {
               "type": 3,

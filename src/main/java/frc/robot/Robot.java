@@ -25,7 +25,9 @@ import frc.robot.controls.controllers.DriverController;
 import frc.robot.controls.controllers.OperatorController;
 import frc.robot.simulation.Field;
 import frc.robot.subsystems.Compressor;
+import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.leds.LEDs;
 
@@ -52,8 +54,10 @@ public class Robot extends LoggedRobot {
   // private final Intake m_intake = Intake.getInstance();
   private final Compressor m_compressor = Compressor.getInstance();
   private final Drivetrain m_drive = Drivetrain.getInstance();
+  private final Coral m_coral = Coral.getInstance();
   // private final Shooter m_shooter = Shooter.getInstance();
-  // private final Climber m_climber = Climber.getInstance();
+  private final Elevator m_elevator = Elevator.getInstance();
+
   public final LEDs m_leds = LEDs.getInstance();
 
   // Auto stuff
@@ -71,12 +75,12 @@ public class Robot extends LoggedRobot {
     setupLogging();
 
     // Add all subsystems to the list
-    // m_allSubsystems.add(m_intake);
-    m_allSubsystems.add(m_compressor);
-    m_allSubsystems.add(m_drive);
-    // m_allSubsystems.add(m_shooter);
-    // m_allSubsystems.add(m_climber);
-    m_allSubsystems.add(m_leds);
+    // m_allSubsystems.add(m_compressor);
+    // m_allSubsystems.add(m_drive);
+    // m_allSubsystems.add(m_coral);
+    m_allSubsystems.add(m_elevator);
+
+    // m_allSubsystems.add(m_leds);
 
     // Set up the Field2d object for simulation
     SmartDashboard.putData("Field", m_field);
@@ -92,7 +96,7 @@ public class Robot extends LoggedRobot {
     updateSim();
 
     // Used by sysid
-    if (this.isTestEnabled()){
+    if (this.isTestEnabled()) {
       CommandScheduler.getInstance().run();
     }
   }
@@ -152,50 +156,62 @@ public class Robot extends LoggedRobot {
 
     m_drive.drive(xSpeed, rot);
 
+    if (m_driverController.getWantsCoralEject()) {
+      // System.out.println("HERE");
+      m_coral.setSpeed(60);
+    } else {
+      m_coral.setSpeed(0);
+    }
+
+    m_elevator.setElevatorPower(m_operatorController.getElevatorAxis());
+
     // // Shooter variable speed
-    // if (m_driverController.getWantsMoreSpeed() || m_operatorController.getWantsMoreSpeed()) {
-    //   m_leds.setColor(Color.kPink);
-    //   speed = 3000;
-    // } else if (m_driverController.getWantsLessSpeed() || m_operatorController.getWantsLessSpeed()) {
-    //   m_leds.setColor(Color.kOrange);
-    //   speed = 430;
-    // } else if (m_driverController.getWantsShooterStop() || m_operatorController.getWantsShooterStop()) {
-    //   m_leds.defaultLEDS();
-    //   speed = 0;
+    // if (m_driverController.getWantsMoreSpeed() ||
+    // m_operatorController.getWantsMoreSpeed()) {
+    // m_leds.setColor(Color.kPink);
+    // speed = 3000;
+    // } else if (m_driverController.getWantsLessSpeed() ||
+    // m_operatorController.getWantsLessSpeed()) {
+    // m_leds.setColor(Color.kOrange);
+    // speed = 430;
+    // } else if (m_driverController.getWantsShooterStop() ||
+    // m_operatorController.getWantsShooterStop()) {
+    // m_leds.defaultLEDS();
+    // speed = 0;
     // }
     // speed = MathUtil.clamp(speed, -6000, 10000);
     // m_shooter.setSpeed(speed);
 
     // // Intake
     // if (m_driverController.getWantsFullIntake()) {
-    //   m_intake.goToGround();
+    // m_intake.goToGround();
     // } else if (m_driverController.getWantsIntake()) {
-    //   if (m_intake.getIntakeHasNote()) {
-    //     m_intake.pulse();
-    //   } else {
-    //     m_intake.intake();
-    //   }
+    // if (m_intake.getIntakeHasNote()) {
+    // m_intake.pulse();
+    // } else {
+    // m_intake.intake();
+    // }
     // } else if (m_driverController.getWantsEject()) {
-    //   m_intake.eject();
+    // m_intake.eject();
     // } else if (m_driverController.getWantsSource()) {
-    //   m_intake.goToSource();
+    // m_intake.goToSource();
     // } else if (m_driverController.getWantsStow()) {
-    //   m_intake.goToStow();
+    // m_intake.goToStow();
     // } else if (m_intake.getIntakeState() != IntakeState.INTAKE) {
-    //   m_intake.stopIntake();
+    // m_intake.stopIntake();
     // }
 
     // // Climber
     // if (m_operatorController.getWantsClimberClimb()) {
-    //   m_climber.climb();
+    // m_climber.climb();
     // } else if (m_operatorController.getWantsClimberRelease()) {
-    //   m_climber.release();
+    // m_climber.release();
     // } else if (m_operatorController.getWantsClimberTiltLeft()) {
-    //   m_climber.tiltLeft();
+    // m_climber.tiltLeft();
     // } else if (m_operatorController.getWantsClimberTiltRight()) {
-    //   m_climber.tiltRight();
+    // m_climber.tiltRight();
     // } else {
-    //   m_climber.stopClimber();
+    // m_climber.stopClimber();
     // }
 
     // if (m_operatorController.getWantsBrakeMode()) {
