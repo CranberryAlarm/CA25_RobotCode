@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.3850387981106844,
+        "y": 5.519087794932347
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.8652632594750345,
+        "y": 5.519087794932347
+      },
+      "isLocked": false,
+      "linkedName": "SubStart"
+    },
+    {
+      "anchor": {
+        "x": 2.866179785668395,
+        "y": 6.722161283630166
+      },
+      "prevControl": {
+        "x": 2.866179785668395,
+        "y": 6.122161283630167
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Note1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "PPTestMode",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

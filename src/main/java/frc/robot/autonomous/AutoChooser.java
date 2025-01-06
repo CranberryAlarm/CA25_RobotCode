@@ -1,19 +1,23 @@
 package frc.robot.autonomous;
 
+import java.util.function.Consumer;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.AutoRunner.AutoMode;
 
 public class AutoChooser {
-  AutoMode m_selectedAuto;
-
-  private String m_selectedAutoName;
+  private static AutoChooser m_autoChooser = null;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  public AutoChooser() {
-    m_chooser.setDefaultOption("PP_TEST_MODE", "PP_TEST_MODE");
-    // m_chooser.setDefaultOption("DEFAULT", "DEFAULT");
+  public static AutoChooser getInstance() {
+    if (m_autoChooser == null) {
+      m_autoChooser = new AutoChooser();
+    }
+    return m_autoChooser;
+  }
 
+  private AutoChooser() {
     // Populate the chooser with all the available autos
     for (AutoMode mode : AutoRunner.AutoMode.values()) {
       m_chooser.addOption(mode.name(), mode.name());
@@ -22,13 +26,11 @@ public class AutoChooser {
     SmartDashboard.putData("Auto picker", m_chooser);
   }
 
-  private void updateSelectedAuto() {
-    m_selectedAutoName = m_chooser.getSelected();
-    m_selectedAuto = AutoRunner.AutoMode.valueOf(m_selectedAutoName);
+  public void setDefaultOption(String option) {
+    m_chooser.setDefaultOption(option, option);
   }
 
-  public AutoMode getSelectedAuto() {
-    updateSelectedAuto();
-    return m_selectedAuto;
+  public void setOnChangeCallback(Consumer<String> listener) {
+    m_chooser.onChange(listener);
   }
 }

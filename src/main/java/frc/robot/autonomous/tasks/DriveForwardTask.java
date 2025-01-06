@@ -1,9 +1,9 @@
 package frc.robot.autonomous.tasks;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.RobotTelemetry;
 import frc.robot.subsystems.Drivetrain;
 
 public class DriveForwardTask extends Task {
@@ -64,7 +64,7 @@ public class DriveForwardTask extends Task {
 
   @Override
   public void done() {
-    DriverStation.reportWarning("Auto driving done", false);
+    RobotTelemetry.print("Auto driving done");
     m_drive.drive(0, 0);
   }
 }

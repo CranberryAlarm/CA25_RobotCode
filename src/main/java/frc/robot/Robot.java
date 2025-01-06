@@ -12,27 +12,20 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.autonomous.AutoChooser;
 import frc.robot.autonomous.AutoRunner;
 import frc.robot.autonomous.tasks.Task;
 import frc.robot.controls.controllers.DriverController;
 import frc.robot.controls.controllers.OperatorController;
 import frc.robot.simulation.Field;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Compressor;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Intake.IntakeState;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.leds.LEDs;
 
@@ -56,17 +49,16 @@ public class Robot extends LoggedRobot {
 
   // Robot subsystems
   private List<Subsystem> m_allSubsystems = new ArrayList<>();
-  private final Intake m_intake = Intake.getInstance();
+  // private final Intake m_intake = Intake.getInstance();
   private final Compressor m_compressor = Compressor.getInstance();
   private final Drivetrain m_drive = Drivetrain.getInstance();
-  private final Shooter m_shooter = Shooter.getInstance();
-  private final Climber m_climber = Climber.getInstance();
+  // private final Shooter m_shooter = Shooter.getInstance();
+  // private final Climber m_climber = Climber.getInstance();
   public final LEDs m_leds = LEDs.getInstance();
 
   // Auto stuff
   private Task m_currentTask;
   private AutoRunner m_autoRunner = AutoRunner.getInstance();
-  private AutoChooser m_autoChooser = new AutoChooser();
 
   // Simulation stuff
   private final Field m_field = Field.getInstance();
@@ -79,11 +71,11 @@ public class Robot extends LoggedRobot {
     setupLogging();
 
     // Add all subsystems to the list
-    m_allSubsystems.add(m_intake);
+    // m_allSubsystems.add(m_intake);
     m_allSubsystems.add(m_compressor);
     m_allSubsystems.add(m_drive);
-    m_allSubsystems.add(m_shooter);
-    m_allSubsystems.add(m_climber);
+    // m_allSubsystems.add(m_shooter);
+    // m_allSubsystems.add(m_climber);
     m_allSubsystems.add(m_leds);
 
     // Set up the Field2d object for simulation
@@ -100,12 +92,13 @@ public class Robot extends LoggedRobot {
     updateSim();
 
     // Used by sysid
-    // CommandScheduler.getInstance().run();
+    if (this.isTestEnabled()){
+      CommandScheduler.getInstance().run();
+    }
   }
 
   @Override
   public void autonomousInit() {
-    m_autoRunner.setAutoMode(m_autoChooser.getSelectedAuto());
     m_currentTask = m_autoRunner.getNextTask();
 
     // Start the first task
@@ -159,51 +152,51 @@ public class Robot extends LoggedRobot {
 
     m_drive.drive(xSpeed, rot);
 
-    // Shooter variable speed
-    if (m_driverController.getWantsMoreSpeed() || m_operatorController.getWantsMoreSpeed()) {
-      m_leds.setColor(Color.kPink);
-      speed = 3000;
-    } else if (m_driverController.getWantsLessSpeed() || m_operatorController.getWantsLessSpeed()) {
-      m_leds.setColor(Color.kOrange);
-      speed = 430;
-    } else if (m_driverController.getWantsShooterStop() || m_operatorController.getWantsShooterStop()) {
-      m_leds.defaultLEDS();
-      speed = 0;
-    }
-    speed = MathUtil.clamp(speed, -6000, 10000);
-    m_shooter.setSpeed(speed);
+    // // Shooter variable speed
+    // if (m_driverController.getWantsMoreSpeed() || m_operatorController.getWantsMoreSpeed()) {
+    //   m_leds.setColor(Color.kPink);
+    //   speed = 3000;
+    // } else if (m_driverController.getWantsLessSpeed() || m_operatorController.getWantsLessSpeed()) {
+    //   m_leds.setColor(Color.kOrange);
+    //   speed = 430;
+    // } else if (m_driverController.getWantsShooterStop() || m_operatorController.getWantsShooterStop()) {
+    //   m_leds.defaultLEDS();
+    //   speed = 0;
+    // }
+    // speed = MathUtil.clamp(speed, -6000, 10000);
+    // m_shooter.setSpeed(speed);
 
-    // Intake
-    if (m_driverController.getWantsFullIntake()) {
-      m_intake.goToGround();
-    } else if (m_driverController.getWantsIntake()) {
-      if (m_intake.getIntakeHasNote()) {
-        m_intake.pulse();
-      } else {
-        m_intake.intake();
-      }
-    } else if (m_driverController.getWantsEject()) {
-      m_intake.eject();
-    } else if (m_driverController.getWantsSource()) {
-      m_intake.goToSource();
-    } else if (m_driverController.getWantsStow()) {
-      m_intake.goToStow();
-    } else if (m_intake.getIntakeState() != IntakeState.INTAKE) {
-      m_intake.stopIntake();
-    }
+    // // Intake
+    // if (m_driverController.getWantsFullIntake()) {
+    //   m_intake.goToGround();
+    // } else if (m_driverController.getWantsIntake()) {
+    //   if (m_intake.getIntakeHasNote()) {
+    //     m_intake.pulse();
+    //   } else {
+    //     m_intake.intake();
+    //   }
+    // } else if (m_driverController.getWantsEject()) {
+    //   m_intake.eject();
+    // } else if (m_driverController.getWantsSource()) {
+    //   m_intake.goToSource();
+    // } else if (m_driverController.getWantsStow()) {
+    //   m_intake.goToStow();
+    // } else if (m_intake.getIntakeState() != IntakeState.INTAKE) {
+    //   m_intake.stopIntake();
+    // }
 
-    // Climber
-    if (m_operatorController.getWantsClimberClimb()) {
-      m_climber.climb();
-    } else if (m_operatorController.getWantsClimberRelease()) {
-      m_climber.release();
-    } else if (m_operatorController.getWantsClimberTiltLeft()) {
-      m_climber.tiltLeft();
-    } else if (m_operatorController.getWantsClimberTiltRight()) {
-      m_climber.tiltRight();
-    } else {
-      m_climber.stopClimber();
-    }
+    // // Climber
+    // if (m_operatorController.getWantsClimberClimb()) {
+    //   m_climber.climb();
+    // } else if (m_operatorController.getWantsClimberRelease()) {
+    //   m_climber.release();
+    // } else if (m_operatorController.getWantsClimberTiltLeft()) {
+    //   m_climber.tiltLeft();
+    // } else if (m_operatorController.getWantsClimberTiltRight()) {
+    //   m_climber.tiltRight();
+    // } else {
+    //   m_climber.stopClimber();
+    // }
 
     // if (m_operatorController.getWantsBrakeMode()) {
     // m_climber.setBrakeMode();
@@ -217,6 +210,8 @@ public class Robot extends LoggedRobot {
     m_leds.rainbow();
     speed = 0;
     m_allSubsystems.forEach(subsystem -> subsystem.stop());
+
+    // TODO: reset the auto state stuff if we're in dev mode
   }
 
   @Override
@@ -269,7 +264,10 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("ProjectName", "Flipside"); // Set a metadata value
 
     if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+      new WPILOGWriter(); // Log to the RoboRIO
+
+      // TODO: Add the next line back with a USB stick
+      // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
       Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
       new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
     }
