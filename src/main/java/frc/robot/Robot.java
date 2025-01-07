@@ -164,6 +164,7 @@ public class Robot extends LoggedRobot {
     // }
 
     // ELEVATOR
+    // m_elevator.setElevatorPower(m_operatorController.getElevatorAxis());
     if (m_operatorController.getWantsElevatorStow()) {
       m_elevator.goToElevatorStow();
     } else if (m_operatorController.getWantsElevatorL2()) {
@@ -172,8 +173,6 @@ public class Robot extends LoggedRobot {
       m_elevator.goToElevatorL3();
     } else if (m_operatorController.getWantsElevatorL4()) {
       m_elevator.goToElevatorL4();
-    } else {
-      m_elevator.setElevatorPower(m_operatorController.getElevatorAxis());
     }
 
     if (m_operatorController.getWantsElevatorReset()) {

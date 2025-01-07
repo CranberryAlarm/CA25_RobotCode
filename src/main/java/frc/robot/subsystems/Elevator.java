@@ -50,8 +50,11 @@ public class Elevator extends Subsystem {
     pidController.setI(Constants.Elevator.kI);
     pidController.setD(Constants.Elevator.kD);
     pidController.setIZone(Constants.Elevator.kIZone);
+    // pidController.setIMaxAccum(0.001, 0)
 
-    mLeftPIDController.setOutputRange(Constants.Elevator.kMaxPowerUp, Constants.Elevator.kMaxPowerDown);
+    // mLeftPIDController.setOutputRange(Constants.Elevator.kMaxPowerUp,
+    // Constants.Elevator.kMaxPowerDown);
+
     // motor.setClosedLoopRampRate(kExtensionCLRampRate);
 
     // mLowerLimit = mLeftMotor.getReverseLimitSwitch(Type.kNormallyOpen);
@@ -75,8 +78,8 @@ public class Elevator extends Subsystem {
     mRightPIDController = mRightMotor.getPIDController();
     setUpElevatorMotor(mRightMotor, mRightPIDController);
 
-    mRightMotor.setInverted(true);
-    mLeftMotor.follow(mRightMotor, true);
+    // mRightMotor.setInverted(true);
+    mRightMotor.follow(mLeftMotor, true);
 
     mLeftMotor.burnFlash();
     mRightMotor.burnFlash();
@@ -104,14 +107,14 @@ public class Elevator extends Subsystem {
   @Override
   public void writePeriodicOutputs() {
     if (mPeriodicIO.is_elevator_pos_control) {
-      mRightPIDController.setReference(
+      mLeftPIDController.setReference(
           mPeriodicIO.elevator_target,
           CANSparkMax.ControlType.kPosition,
           0,
           Constants.Elevator.kG,
           ArbFFUnits.kVoltage);
     } else {
-      mRightMotor.set(mPeriodicIO.elevator_power);
+      mLeftMotor.set(mPeriodicIO.elevator_power);
     }
   }
 
@@ -131,6 +134,8 @@ public class Elevator extends Subsystem {
     putNumber("Current/Left", mLeftMotor.getOutputCurrent());
     putNumber("Current/Right", mRightMotor.getOutputCurrent());
 
+    putNumber("Output/Left", mLeftMotor.getAppliedOutput());
+    putNumber("Output/Right", mRightMotor.getAppliedOutput());
   }
 
   @Override

@@ -96,7 +96,7 @@ public class Coral extends Subsystem {
   public void writePeriodicOutputs() {
     // mLeftMotor.setVelocity(mPeriodicIO.rpm - mPeriodicIO.speed_diff);
     // mRightMotor.setVelocity(mPeriodicIO.rpm);
-    // mLeftMotor.setPercent(mPeriodicIO.rpm - mPeriodicIO.speed_diff);
+    mLeftMotor.setPercent(mPeriodicIO.rpm - mPeriodicIO.speed_diff);
     mRightMotor.setPercent(-mPeriodicIO.rpm);
   }
 
