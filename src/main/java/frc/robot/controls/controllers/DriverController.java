@@ -32,8 +32,20 @@ public class DriverController extends FilteredController {
     return this.getFilteredAxis(3) > k_triggerActivationThreshold;
   }
 
-  public boolean getWantsCoralEject() {
+  public boolean getWantsAlgaeStow() {
     return this.getRawButton(1);
+  }
+
+  public boolean getWantsAlgaeGrab() {
+    return this.getRawButton(3);
+  }
+
+  public boolean getWantsAlgaeScore() {
+    return this.getRawButton(2);
+  }
+
+  public boolean getWantsAlgaeGroundIntake() {
+    return this.getRawButton(4);
   }
 
   public void outputTelemetry() {

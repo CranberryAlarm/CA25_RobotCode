@@ -24,11 +24,17 @@
             "/RealOutputs/Auto/DriveTrajectory/CurrentPose/rotation",
             "/RealOutputs/Elevator",
             "/RealOutputs/Elevator/Position",
-            "/RealOutputs/Elevator/Current"
+            "/RealOutputs/Elevator/Current",
+            "/RealOutputs/Coral/RPM",
+            "/RealOutputs/Coral/Laser",
+            "/RealOutputs/Coral/RPM/Left",
+            "/RealOutputs/Coral/RPM/Right",
+            "/RealOutputs/Coral",
+            "/RealOutputs/Elevator/Output"
           ]
         },
         "tabs": {
-          "selected": 3,
+          "selected": 4,
           "tabs": [
             {
               "type": 0,
@@ -181,6 +187,80 @@
                 }
               },
               "title": "Elevator"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": []
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": []
+                }
+              },
+              "title": "Wrist"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "/RealOutputs/Coral/RPM/target",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "/RealOutputs/Coral/RPM/Left/Position",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "/RealOutputs/Coral/RPM/Right/Position",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "/RealOutputs/Coral/Laser/distance",
+                      "color": "#e48b32",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Coral"
             },
             {
               "type": 3,

@@ -24,6 +24,7 @@ import frc.robot.autonomous.tasks.Task;
 import frc.robot.controls.controllers.DriverController;
 import frc.robot.controls.controllers.OperatorController;
 import frc.robot.simulation.Field;
+import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Compressor;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Drivetrain;
@@ -55,6 +56,7 @@ public class Robot extends LoggedRobot {
   private final Compressor m_compressor = Compressor.getInstance();
   private final Drivetrain m_drive = Drivetrain.getInstance();
   private final Coral m_coral = Coral.getInstance();
+  private final Algae m_algae = Algae.getInstance();
   // private final Shooter m_shooter = Shooter.getInstance();
   private final Elevator m_elevator = Elevator.getInstance();
 
@@ -78,6 +80,7 @@ public class Robot extends LoggedRobot {
     // m_allSubsystems.add(m_compressor);
     m_allSubsystems.add(m_drive);
     m_allSubsystems.add(m_coral);
+    m_allSubsystems.add(m_algae);
     m_allSubsystems.add(m_elevator);
 
     // m_allSubsystems.add(m_leds);
@@ -156,12 +159,16 @@ public class Robot extends LoggedRobot {
 
     m_drive.drive(xSpeed, rot);
 
-    // if (m_driverController.getWantsCoralEject()) {
-    // // System.out.println("HERE");
-    // m_coral.setSpeed(60);
-    // } else {
-    // m_coral.setSpeed(0);
-    // }
+    // ALGAE
+    if (m_driverController.getWantsAlgaeStow()) {
+      m_algae.stow();
+    } else if (m_driverController.getWantsAlgaeGrab()) {
+      m_algae.grabAlgae();
+    } else if (m_driverController.getWantsAlgaeScore()) {
+      m_algae.score();
+    } else if (m_driverController.getWantsAlgaeGroundIntake()) {
+      m_algae.groundIntake();
+    }
 
     // ELEVATOR
     // m_elevator.setElevatorPower(m_operatorController.getElevatorAxis());
