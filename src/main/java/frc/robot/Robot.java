@@ -77,7 +77,7 @@ public class Robot extends LoggedRobot {
     // Add all subsystems to the list
     // m_allSubsystems.add(m_compressor);
     // m_allSubsystems.add(m_drive);
-    // m_allSubsystems.add(m_coral);
+    m_allSubsystems.add(m_coral);
     m_allSubsystems.add(m_elevator);
 
     // m_allSubsystems.add(m_leds);
@@ -156,31 +156,45 @@ public class Robot extends LoggedRobot {
 
     m_drive.drive(xSpeed, rot);
 
-    if (m_driverController.getWantsCoralEject()) {
-      // System.out.println("HERE");
-      m_coral.setSpeed(60);
+    // if (m_driverController.getWantsCoralEject()) {
+    // // System.out.println("HERE");
+    // m_coral.setSpeed(60);
+    // } else {
+    // m_coral.setSpeed(0);
+    // }
+
+    // ELEVATOR
+    if (m_operatorController.getWantsElevatorStow()) {
+      m_elevator.goToElevatorStow();
+    } else if (m_operatorController.getWantsElevatorL2()) {
+      m_elevator.goToElevatorL2();
+    } else if (m_operatorController.getWantsElevatorL3()) {
+      m_elevator.goToElevatorL3();
+    } else if (m_operatorController.getWantsElevatorL4()) {
+      m_elevator.goToElevatorL4();
     } else {
-      m_coral.setSpeed(0);
+      m_elevator.setElevatorPower(m_operatorController.getElevatorAxis());
     }
 
-    m_elevator.setElevatorPower(m_operatorController.getElevatorAxis());
+    if (m_operatorController.getWantsElevatorReset()) {
+      RobotTelemetry.print("Resetting elevator");
+      m_elevator.reset();
+    }
 
-    // // Shooter variable speed
-    // if (m_driverController.getWantsMoreSpeed() ||
-    // m_operatorController.getWantsMoreSpeed()) {
-    // m_leds.setColor(Color.kPink);
-    // speed = 3000;
-    // } else if (m_driverController.getWantsLessSpeed() ||
-    // m_operatorController.getWantsLessSpeed()) {
-    // m_leds.setColor(Color.kOrange);
-    // speed = 430;
-    // } else if (m_driverController.getWantsShooterStop() ||
-    // m_operatorController.getWantsShooterStop()) {
-    // m_leds.defaultLEDS();
-    // speed = 0;
-    // }
-    // speed = MathUtil.clamp(speed, -6000, 10000);
-    // m_shooter.setSpeed(speed);
+    // CORAL
+    if (m_operatorController.getWantsCoralIntake()) {
+      m_coral.intake();
+    } else if (m_operatorController.getWantsCoralReverse()) {
+      m_coral.reverse();
+    } else if (m_operatorController.getWantsCoralIndex()) {
+      m_coral.index();
+    } else if (m_operatorController.getWantsCoralL1()) {
+      m_coral.scoreL1();
+    } else if (m_operatorController.getWantsCoralL24()) {
+      m_coral.scoreL24();
+    } else {
+      m_coral.stopCoral();
+    }
 
     // // Intake
     // if (m_driverController.getWantsFullIntake()) {

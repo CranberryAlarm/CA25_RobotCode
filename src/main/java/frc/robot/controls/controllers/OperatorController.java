@@ -21,41 +21,45 @@ public class OperatorController extends FilteredController {
   // return this.getFilteredAxis(2) > k_triggerActivationThreshold;
   // }
 
-  // Buttons
-  // public boolean getWantsBrakeMode() {
-  // return this.getRawButton(1);
-  // }
+  // CORAL
+  public boolean getWantsCoralIntake() {
+    return this.getRawButton(4);
+  }
 
-  // public boolean getWantsCoastMode() {
-  // return this.getRawButton(2);
-  // }
+  public boolean getWantsCoralReverse() {
+    return this.getRawButton(1);
+  }
 
-  // public boolean getWantsMoreSpeed() {
-  // return this.getRawButtonPressed(6);
-  // }
+  public boolean getWantsCoralIndex() {
+    return this.getRawButton(8);
+  }
 
-  // public boolean getWantsLessSpeed() {
-  // return this.getRawButtonPressed(5);
-  // }
+  public boolean getWantsCoralL1() {
+    return this.getRawButton(3);
+  }
 
-  // public boolean getWantsShooterStop() {
-  // return this.getRawButtonPressed(4);
-  // }
+  public boolean getWantsCoralL24() {
+    return this.getRawButton(2);
+  }
 
-  // D pad
-  // public boolean getWantsClimberRelease() {
-  // return this.getHatDown();
-  // }
+  // ELEVATOR
+  public boolean getWantsElevatorReset() {
+    return this.getRawButton(7);
+  }
 
-  // public boolean getWantsClimberTiltRight() {
-  // return this.getHatRight();
-  // }
+  public boolean getWantsElevatorStow() {
+    return this.getHatDown();
+  }
 
-  // public boolean getWantsClimberClimb() {
-  // return this.getHatUp();
-  // }
+  public boolean getWantsElevatorL2() {
+    return this.getHatLeft();
+  }
 
-  // public boolean getWantsClimberTiltLeft() {
-  // return this.getHatLeft();
-  // }
+  public boolean getWantsElevatorL3() {
+    return this.getHatRight();
+  }
+
+  public boolean getWantsElevatorL4() {
+    return this.getHatUp();
+  }
 }

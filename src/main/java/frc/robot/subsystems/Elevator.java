@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import frc.robot.Constants;
 import frc.robot.simulation.SimulatableCANSparkMax;
@@ -48,9 +49,8 @@ public class Elevator extends Subsystem {
     pidController.setP(Constants.Elevator.kP);
     pidController.setI(Constants.Elevator.kI);
     pidController.setD(Constants.Elevator.kD);
-
     pidController.setIZone(Constants.Elevator.kIZone);
-    pidController.setFF(Constants.Elevator.kFF);
+
     mLeftPIDController.setOutputRange(Constants.Elevator.kMaxPowerUp, Constants.Elevator.kMaxPowerDown);
     // motor.setClosedLoopRampRate(kExtensionCLRampRate);
 
@@ -104,7 +104,12 @@ public class Elevator extends Subsystem {
   @Override
   public void writePeriodicOutputs() {
     if (mPeriodicIO.is_elevator_pos_control) {
-      mRightPIDController.setReference(mPeriodicIO.elevator_target, CANSparkMax.ControlType.kPosition);
+      mRightPIDController.setReference(
+          mPeriodicIO.elevator_target,
+          CANSparkMax.ControlType.kPosition,
+          0,
+          Constants.Elevator.kG,
+          ArbFFUnits.kVoltage);
     } else {
       mRightMotor.set(mPeriodicIO.elevator_power);
     }
@@ -120,9 +125,6 @@ public class Elevator extends Subsystem {
 
   @Override
   public void outputTelemetry() {
-    // putNumber("Speed (RPM):", mPeriodicIO.shooter_rpm);
-    // putNumber("Left speed:", mLeftShooterEncoder.getVelocity());
-
     putNumber("Position/Current", mRightEncoder.getPosition());
     putNumber("Position/Target", mPeriodicIO.elevator_target);
 
@@ -133,19 +135,10 @@ public class Elevator extends Subsystem {
 
   @Override
   public void reset() {
+    mRightEncoder.setPosition(0.0);
   }
 
   /*---------------------------------- Custom Public Functions ----------------------------------*/
-
-  public void raise() {
-    mPeriodicIO.is_elevator_pos_control = false;
-    mPeriodicIO.elevator_power = Constants.Elevator.kMaxPowerUp;
-  }
-
-  public void lower() {
-    mPeriodicIO.is_elevator_pos_control = false;
-    mPeriodicIO.elevator_power = Constants.Elevator.kMaxPowerDown;
-  }
 
   public void setElevatorPower(double power) {
     putNumber("setElevatorPower", power);
@@ -156,6 +149,16 @@ public class Elevator extends Subsystem {
   public void goToElevatorStow() {
     mPeriodicIO.is_elevator_pos_control = true;
     mPeriodicIO.elevator_target = Constants.Elevator.kStowHeight;
+  }
+
+  public void goToElevatorL2() {
+    mPeriodicIO.is_elevator_pos_control = true;
+    mPeriodicIO.elevator_target = Constants.Elevator.kL2Height;
+  }
+
+  public void goToElevatorL3() {
+    mPeriodicIO.is_elevator_pos_control = true;
+    mPeriodicIO.elevator_target = Constants.Elevator.kL3Height;
   }
 
   public void goToElevatorL4() {
