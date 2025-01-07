@@ -122,9 +122,9 @@ public class Constants {
 
   // Drivetrain
   public static class Drive {
-    public static final double kP = 0.00085;// 3.6954;//0.085;
-    public static final double kI = 0.0;// 0.0;
-    public static final double kD = 0.0;// 0.0;
+    public static final double kP = 0.0; // 0.00085;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
 
     public static final double kS = 0.1695;// 0.01;
     public static final double kV = 2.8559;// 2.6;

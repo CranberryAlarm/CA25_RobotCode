@@ -76,7 +76,7 @@ public class Robot extends LoggedRobot {
 
     // Add all subsystems to the list
     // m_allSubsystems.add(m_compressor);
-    // m_allSubsystems.add(m_drive);
+    m_allSubsystems.add(m_drive);
     m_allSubsystems.add(m_coral);
     m_allSubsystems.add(m_elevator);
 
