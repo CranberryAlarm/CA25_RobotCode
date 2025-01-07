@@ -22,15 +22,12 @@
             "/RealOutputs/Auto/DriveTrajectory/TargetPose/rotation",
             "/RealOutputs/Auto/DriveTrajectory/CurrentPose",
             "/RealOutputs/Auto/DriveTrajectory/CurrentPose/rotation",
-            "/RealOutputs/Elevator",
             "/RealOutputs/Elevator/Position",
-            "/RealOutputs/Elevator/Current",
-            "/RealOutputs/Coral/RPM",
-            "/RealOutputs/Coral/Laser",
             "/RealOutputs/Coral/RPM/Left",
             "/RealOutputs/Coral/RPM/Right",
-            "/RealOutputs/Coral",
-            "/RealOutputs/Elevator/Output"
+            "/RealOutputs/Elevator/Output",
+            "/RealOutputs/Algae",
+            "/RealOutputs/Algae/Wrist"
           ]
         },
         "tabs": {
@@ -198,7 +195,23 @@
                     "type": null,
                     "factor": 1
                   },
-                  "fields": []
+                  "fields": [
+                    {
+                      "key": "/RealOutputs/Algae/Wrist/Frequency",
+                      "color": "#e5b31b",
+                      "show": false
+                    },
+                    {
+                      "key": "/RealOutputs/Algae/Wrist/Output",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "/RealOutputs/Algae/Wrist/Voltage",
+                      "color": "#e48b32",
+                      "show": true
+                    }
+                  ]
                 },
                 "discrete": {
                   "fields": []
@@ -209,7 +222,18 @@
                     "type": null,
                     "factor": 1
                   },
-                  "fields": []
+                  "fields": [
+                    {
+                      "key": "/RealOutputs/Algae/Wrist/Position",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "/RealOutputs/Algae/Wrist/Target",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
                 }
               },
               "title": "Wrist"
@@ -261,6 +285,44 @@
                 }
               },
               "title": "Coral"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "/RealOutputs/Algae/Intake/Output",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "/RealOutputs/Algae/Intake/Current",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Intake"
             },
             {
               "type": 3,
