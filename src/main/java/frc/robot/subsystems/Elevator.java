@@ -148,7 +148,7 @@ public class Elevator extends Subsystem {
           ArbFFUnits.kVoltage);
     } else {
       mCurState.position = mRightEncoder.getPosition();
-      mCurState.velocity = mRightEncoder.getVelocity();
+      mCurState.velocity = 0;
       mLeftMotor.set(mPeriodicIO.elevator_power);
     }
   }
