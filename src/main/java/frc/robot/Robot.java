@@ -180,9 +180,12 @@ public class Robot extends LoggedRobot {
       } else {
         m_coral.scoreL24();
       }
-    } else {
-      m_coral.stopCoral();
+    } else if (m_driverController.getWantsIntakeCoral()) {
+      m_coral.intake();
     }
+    // else {
+    // m_coral.stopCoral();
+    // }
 
     // ALGAE
     // if (m_driverController.getWantsAlgaeStow()) {

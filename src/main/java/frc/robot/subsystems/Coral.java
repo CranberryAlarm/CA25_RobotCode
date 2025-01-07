@@ -20,12 +20,20 @@ public class Coral extends Subsystem {
     return mInstance;
   }
 
+  public enum IntakeState {
+    NONE,
+    INTAKE,
+    REVERSE,
+    INDEX,
+    READY,
+    SCORE
+  }
+
   private ThriftyNova mLeftMotor;
   private ThriftyNova mRightMotor;
   private PIDConfig mPIDConfig;
 
   private LaserCan mLaserCAN;
-  private int mLaserReading;
 
   private Coral() {
     super("Coral");
@@ -38,8 +46,8 @@ public class Coral extends Subsystem {
     // mLeftMotor.factoryReset();
     // mRightMotor.factoryReset();
 
-    mLeftMotor.setBrakeMode(false);
-    mRightMotor.setBrakeMode(false);
+    mLeftMotor.setBrakeMode(true);
+    mRightMotor.setBrakeMode(true);
 
     // mLeftMotor.setMaxCurrent(CurrentType.STATOR, Constants.Coral.kMaxCurrent);
     // mRightMotor.setMaxCurrent(CurrentType.STATOR, Constants.Coral.kMaxCurrent);
@@ -81,7 +89,11 @@ public class Coral extends Subsystem {
     double rpm = 0.0;
     double speed_diff = 0.0;
 
+    int index_debounce = 0;
+
     LaserCan.Measurement measurement;
+
+    IntakeState state = IntakeState.NONE;
   }
 
   /*-------------------------------- Generic Subsystem Functions --------------------------------*/
@@ -90,6 +102,7 @@ public class Coral extends Subsystem {
   public void periodic() {
     mPeriodicIO.measurement = mLaserCAN.getMeasurement();
 
+    checkAutoTasks();
   }
 
   @Override
@@ -104,6 +117,7 @@ public class Coral extends Subsystem {
   public void stop() {
     mPeriodicIO.rpm = 0.0;
     mPeriodicIO.speed_diff = 0.0;
+    mPeriodicIO.state = IntakeState.NONE;
   }
 
   @Override
@@ -122,6 +136,8 @@ public class Coral extends Subsystem {
       putNumber("Laser/ambient", measurement.ambient);
       putNumber("Laser/budget_ms", measurement.budget_ms);
       putNumber("Laser/status", measurement.status);
+
+      putBoolean("Laser/hasCoral", isHoldingCoralViaLaserCAN());
     }
   }
 
@@ -132,6 +148,10 @@ public class Coral extends Subsystem {
 
   /*---------------------------------- Custom Public Functions ----------------------------------*/
 
+  public boolean isHoldingCoralViaLaserCAN() {
+    return mPeriodicIO.measurement.distance_mm < 50.0;
+  }
+
   public void setSpeed(double rpm) {
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = rpm;
@@ -140,32 +160,61 @@ public class Coral extends Subsystem {
   public void intake() {
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = Constants.Coral.kIntakeSpeed;
+    mPeriodicIO.state = IntakeState.INTAKE;
   }
 
   public void reverse() {
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = Constants.Coral.kReverseSpeed;
+    mPeriodicIO.state = IntakeState.REVERSE;
   }
 
   public void index() {
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = Constants.Coral.kIndexSpeed;
+    mPeriodicIO.state = IntakeState.INDEX;
   }
 
   public void scoreL1() {
     mPeriodicIO.speed_diff = Constants.Coral.kSpeedDifference;
     mPeriodicIO.rpm = Constants.Coral.kL1Speed;
+    mPeriodicIO.state = IntakeState.SCORE;
   }
 
   public void scoreL24() {
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = Constants.Coral.kL24Speed;
+    mPeriodicIO.state = IntakeState.SCORE;
   }
 
   public void stopCoral() {
     mPeriodicIO.rpm = 0.0;
     mPeriodicIO.speed_diff = 0.0;
+    mPeriodicIO.state = IntakeState.NONE;
   }
 
   /*---------------------------------- Custom Private Functions ---------------------------------*/
+
+  private void checkAutoTasks() {
+    switch (mPeriodicIO.state) {
+      case INTAKE:
+        if (isHoldingCoralViaLaserCAN()) {
+          mPeriodicIO.index_debounce++;
+
+          if (mPeriodicIO.index_debounce > 10) {
+            mPeriodicIO.index_debounce = 0;
+            index();
+          }
+        }
+        break;
+      case INDEX:
+        if (!isHoldingCoralViaLaserCAN()) {
+          stopCoral();
+          mPeriodicIO.state = IntakeState.READY;
+        }
+        break;
+      default:
+        break;
+    }
+  }
 }
