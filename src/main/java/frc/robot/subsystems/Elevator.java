@@ -151,9 +151,6 @@ public class Elevator extends Subsystem {
       mCurState.velocity = mRightEncoder.getVelocity();
       mLeftMotor.set(mPeriodicIO.elevator_power);
     }
-    SmartDashboard.putNumber("goal", mGoalState.position);
-    SmartDashboard.putNumber("curstate", mCurState.position);
-    SmartDashboard.putNumber("curvel", mCurState.velocity);
   }
 
   @Override
@@ -168,6 +165,10 @@ public class Elevator extends Subsystem {
   public void outputTelemetry() {
     putNumber("Position/Current", mRightEncoder.getPosition());
     putNumber("Position/Target", mPeriodicIO.elevator_target);
+    putNumber("Velocity/Current", mRightEncoder.getVelocity());
+    
+    putNumber("Position/Setpoint", mCurState.position);
+    putNumber("Velocity/Setpoint", mCurState.velocity);
 
     putNumber("Current/Left", mLeftMotor.getOutputCurrent());
     putNumber("Current/Right", mRightMotor.getOutputCurrent());
