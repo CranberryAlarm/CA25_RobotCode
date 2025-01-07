@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.reduxrobotics.sensors.canandcolor.Canandcolor;
+import com.reduxrobotics.sensors.canandcolor.CanandcolorSettings;
+import com.reduxrobotics.sensors.canandcolor.ProximityPeriod;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController;
@@ -45,6 +48,8 @@ public class Coral extends Subsystem {
   private PIDConfig mPIDConfig;
 
   private LaserCan mLaserCAN;
+
+  private Canandcolor mCanandcolor;
 
   private Coral() {
     super("Coral");
@@ -110,6 +115,13 @@ public class Coral extends Subsystem {
     } catch (ConfigurationFailedException e) {
       System.out.println("Configuration failed! " + e);
     }
+
+    mCanandcolor = new Canandcolor(0);
+    mCanandcolor.resetFactoryDefaults();
+    mCanandcolor.setSettings(
+      new CanandcolorSettings()
+        .setProximityIntegrationPeriod(ProximityPeriod.k5ms)
+        .setProximityFramePeriod(0.02));
   }
 
   private static class PeriodicIO {
@@ -170,6 +182,7 @@ public class Coral extends Subsystem {
 
       putBoolean("Laser/hasCoral", isHoldingCoralViaLaserCAN());
     }
+    putNumber("Canandcolor/Proximity", mCanandcolor.getProximity());
   }
 
   @Override

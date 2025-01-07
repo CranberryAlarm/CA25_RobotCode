@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.reduxrobotics.frc</groupId>
+  <artifactId>ReduxLib-java</artifactId>
+  <versioning>
+    <latest>2024.4.0-ri3d</latest>
+    <release>2024.4.0-ri3d</release>
+    <versions>
+      <version>2024.4.0-ri3d</version>
+    </versions>
+    <lastUpdated>20250105120946</lastUpdated>
+  </versioning>
+</metadata>
