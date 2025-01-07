@@ -33,6 +33,9 @@ public class Constants {
     public static final double kScoreAlgaeHeight = 0.0;
     public static final double kLowAlgaeHeight = 24.8;
     public static final double kHighAlgaeHeight = 42.5;
+
+    public static final double kMaxVelocity = 100;
+    public static final double kMaxAcceleration = 100;
   }
 
   public static class Coral {

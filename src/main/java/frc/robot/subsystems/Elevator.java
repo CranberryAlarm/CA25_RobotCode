@@ -7,6 +7,9 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.simulation.SimulatableCANSparkMax;
 
@@ -33,6 +36,11 @@ public class Elevator extends Subsystem {
   private SimulatableCANSparkMax mRightMotor;
   private RelativeEncoder mRightEncoder;
   private SparkPIDController mRightPIDController;
+
+  private TrapezoidProfile mProfile;
+  private TrapezoidProfile.State mCurState = new TrapezoidProfile.State();
+  private TrapezoidProfile.State mGoalState = new TrapezoidProfile.State();
+  private double prevUpdateTime = Timer.getFPGATimestamp();
 
   // private RelativeEncoder mLeftEncoder;
   // private SparkMaxLimitSwitch mLowerLimit;
@@ -83,6 +91,8 @@ public class Elevator extends Subsystem {
 
     mLeftMotor.burnFlash();
     mRightMotor.burnFlash();
+
+    mProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(Constants.Elevator.kMaxVelocity, Constants.Elevator.kMaxAcceleration));
   }
 
   public enum ElevatorState {
@@ -118,16 +128,32 @@ public class Elevator extends Subsystem {
 
   @Override
   public void writePeriodicOutputs() {
+    double curTime = Timer.getFPGATimestamp();
+    double dt = curTime - prevUpdateTime;
+    prevUpdateTime = curTime;
     if (mPeriodicIO.is_elevator_pos_control) {
+      // Update goal
+      mGoalState.position = mPeriodicIO.elevator_target;
+
+      // Calculate new state
+      prevUpdateTime = curTime;
+      mCurState = mProfile.calculate(dt, mCurState, mGoalState);
+
+      // Set PID controller to new state
       mLeftPIDController.setReference(
-          mPeriodicIO.elevator_target,
+          mCurState.position,
           CANSparkMax.ControlType.kPosition,
           0,
           Constants.Elevator.kG,
           ArbFFUnits.kVoltage);
     } else {
+      mCurState.position = mRightEncoder.getPosition();
+      mCurState.velocity = mRightEncoder.getVelocity();
       mLeftMotor.set(mPeriodicIO.elevator_power);
     }
+    SmartDashboard.putNumber("goal", mGoalState.position);
+    SmartDashboard.putNumber("curstate", mCurState.position);
+    SmartDashboard.putNumber("curvel", mCurState.velocity);
   }
 
   @Override
