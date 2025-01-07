@@ -49,7 +49,7 @@ public class Constants {
     public static final double kD = 0.0;
     public static final double kIZone = 0;
 
-    public static final double kIntakeSpeed = 0.5;
+    public static final double kIntakeSpeed = 0.3;
     public static final double kReverseSpeed = -0.3;
     public static final double kL1Speed = 0.8;
     public static final double kL24Speed = 0.8;

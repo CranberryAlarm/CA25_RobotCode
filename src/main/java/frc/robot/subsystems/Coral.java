@@ -35,14 +35,26 @@ public class Coral extends Subsystem {
     mLeftMotor = new ThriftyNova(Constants.Coral.kLeftMotorId);
     mRightMotor = new ThriftyNova(Constants.Coral.kRightMotorId);
 
-    mLeftMotor.factoryReset();
-    mRightMotor.factoryReset();
+    // mLeftMotor.factoryReset();
+    // mRightMotor.factoryReset();
 
     mLeftMotor.setBrakeMode(false);
     mRightMotor.setBrakeMode(false);
 
     // mLeftMotor.setMaxCurrent(CurrentType.STATOR, Constants.Coral.kMaxCurrent);
     // mRightMotor.setMaxCurrent(CurrentType.STATOR, Constants.Coral.kMaxCurrent);
+
+    // mLeftMotor.setMaxCurrent(CurrentType.STATOR, 200.0);
+    // mRightMotor.setMaxCurrent(CurrentType.STATOR, 200.0);
+
+    // mLeftMotor.setMaxCurrent(CurrentType.SUPPLY, 200.0);
+    // mRightMotor.setMaxCurrent(CurrentType.SUPPLY, 200.0);
+
+    mLeftMotor.setRampUp(0.5);
+    mRightMotor.setRampUp(0.5);
+
+    mLeftMotor.setMaxOutput(1.0);
+    mRightMotor.setMaxOutput(1.0);
 
     mPIDConfig = mRightMotor.pid0;
     mPIDConfig.setP(Constants.Coral.kP);
@@ -51,8 +63,9 @@ public class Coral extends Subsystem {
     mPIDConfig.setIZone(Constants.Coral.kIZone);
 
     // TODO: Make sure we're inverting the correct motor
-    mLeftMotor.setInverted(false);
-    mRightMotor.setInversion(true);
+    // mLeftMotor.setInverted(true);
+    // mLeftMotor.setInversion(false);
+    // mRightMotor.setInversion(false);
 
     mLaserCAN = new LaserCan(Constants.Coral.kLaserId);
     try {
@@ -83,8 +96,8 @@ public class Coral extends Subsystem {
   public void writePeriodicOutputs() {
     // mLeftMotor.setVelocity(mPeriodicIO.rpm - mPeriodicIO.speed_diff);
     // mRightMotor.setVelocity(mPeriodicIO.rpm);
-    mLeftMotor.setPercent(mPeriodicIO.rpm - mPeriodicIO.speed_diff);
-    mRightMotor.setPercent(mPeriodicIO.rpm);
+    // mLeftMotor.setPercent(mPeriodicIO.rpm - mPeriodicIO.speed_diff);
+    mRightMotor.setPercent(-mPeriodicIO.rpm);
   }
 
   @Override
