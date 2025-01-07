@@ -24,14 +24,6 @@ public class Algae extends Subsystem {
     return mInstance;
   }
 
-  public enum IntakeState {
-    NONE,
-    INTAKE,
-    INDEX,
-    READY,
-    SCORE
-  }
-
   private SimulatableCANSparkMax mWristMotor;
   private final ProfiledPIDController mWristPIDController;
   private final ArmFeedforward mWristFeedForward;
@@ -104,7 +96,6 @@ public class Algae extends Subsystem {
     mWristMotor.set(mPeriodicIO.wrist_voltage);
 
     mIntakeMotor.set(mPeriodicIO.intake_power);
-    // mIntakeMotor.setVoltage(mPeriodicIO.intake_power);
   }
 
   @Override
@@ -138,7 +129,7 @@ public class Algae extends Subsystem {
 
   public void stow() {
     mPeriodicIO.wrist_target_angle = Constants.Algae.kStowAngle;
-    mPeriodicIO.intake_power = 0.0;
+    // mPeriodicIO.intake_power = 0.0;
   }
 
   public void grabAlgae() {

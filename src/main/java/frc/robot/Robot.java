@@ -172,6 +172,16 @@ public class Robot extends LoggedRobot {
     } else if (m_driverController.getWantsL4()) {
       m_elevator.goToElevatorL4();
       m_algae.stow();
+    } else if (m_driverController.getWantsA1()) {
+      m_elevator.goToAlgaeLow();
+      m_algae.grabAlgae();
+    } else if (m_driverController.getWantsA2()) {
+      m_elevator.goToAlgaeHigh();
+      m_algae.grabAlgae();
+    } else if (m_driverController.getWantsEjectAlgae()) {
+      m_algae.score();
+    } else if (m_driverController.getWantsGroundAlgae()) {
+      m_algae.groundIntake();
     }
 
     if (m_driverController.getWantsScoreCoral()) {
@@ -183,9 +193,6 @@ public class Robot extends LoggedRobot {
     } else if (m_driverController.getWantsIntakeCoral()) {
       m_coral.intake();
     }
-    // else {
-    // m_coral.stopCoral();
-    // }
 
     // ALGAE
     // if (m_driverController.getWantsAlgaeStow()) {
