@@ -25,9 +25,9 @@ public class Constants {
     public static final double kMaxPowerDown = 0.1;
 
     public static final double kStowHeight = 0.0;
-    public static final double kL2Height = 9.0;
-    public static final double kL3Height = 25.14;
-    public static final double kL4Height = 51.0;
+    public static final double kL2Height = 9.5;
+    public static final double kL3Height = 25.64;
+    public static final double kL4Height = 52.8;
     public static final double kMaxHeight = 56.2;
     public static final double kGroundAlgaeHeight = 0.0;
     public static final double kScoreAlgaeHeight = 0.0;
@@ -82,10 +82,10 @@ public class Constants {
 
     public static final double kStowAngle = 233.0;
     public static final double kDeAlgaeAngle = 215.0;
-    public static final double kGroundIntakeAngle = 140.0;
+    public static final double kGroundIntakeAngle = 162.0;
 
     // INTAKE
-    public static final int kMaxIntakeCurrent = 15;
+    public static final int kMaxIntakeCurrent = 20;
 
     public static final double kIntakeSpeed = 0.6;
     public static final double kEjectSpeed = -0.3;
@@ -175,7 +175,7 @@ public class Constants {
   }
 
   public static class LEDs {
-    public static final int k_PWMId = 0;
+    public static final int k_PWMId = 9;
     public static final int k_totalLength = 300;
   }
 }

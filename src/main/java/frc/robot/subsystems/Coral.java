@@ -5,13 +5,16 @@ import com.thethriftybot.ThriftyNova.PIDConfig;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Constants;
+import frc.robot.subsystems.leds.LEDs;
 
 public class Coral extends Subsystem {
 
   /*-------------------------------- Private instance variables ---------------------------------*/
   private static Coral mInstance;
   private PeriodicIO mPeriodicIO;
+  public final LEDs m_leds = LEDs.getInstance();
 
   public static Coral getInstance() {
     if (mInstance == null) {
@@ -149,7 +152,7 @@ public class Coral extends Subsystem {
   /*---------------------------------- Custom Public Functions ----------------------------------*/
 
   public boolean isHoldingCoralViaLaserCAN() {
-    return mPeriodicIO.measurement.distance_mm < 50.0;
+    return mPeriodicIO.measurement.distance_mm < 75.0;
   }
 
   public void setSpeed(double rpm) {
@@ -161,6 +164,8 @@ public class Coral extends Subsystem {
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = Constants.Coral.kIntakeSpeed;
     mPeriodicIO.state = IntakeState.INTAKE;
+
+    m_leds.setColor(Color.kYellow);
   }
 
   public void reverse() {
@@ -173,6 +178,8 @@ public class Coral extends Subsystem {
     mPeriodicIO.speed_diff = 0.0;
     mPeriodicIO.rpm = Constants.Coral.kIndexSpeed;
     mPeriodicIO.state = IntakeState.INDEX;
+
+    m_leds.setColor(Color.kBlue);
   }
 
   public void scoreL1() {
@@ -210,7 +217,9 @@ public class Coral extends Subsystem {
       case INDEX:
         if (!isHoldingCoralViaLaserCAN()) {
           stopCoral();
+
           mPeriodicIO.state = IntakeState.READY;
+          m_leds.setColor(Color.kBlue);
         }
         break;
       default:

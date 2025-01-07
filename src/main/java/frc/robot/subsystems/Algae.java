@@ -24,6 +24,13 @@ public class Algae extends Subsystem {
     return mInstance;
   }
 
+  public enum IntakeState {
+    NONE,
+    STOW,
+    DEALGAE,
+    GROUND
+  }
+
   private SimulatableCANSparkMax mWristMotor;
   private final ProfiledPIDController mWristPIDController;
   private final ArmFeedforward mWristFeedForward;
@@ -78,6 +85,8 @@ public class Algae extends Subsystem {
     double wrist_voltage = 0.0;
 
     double intake_power = 0.0;
+
+    IntakeState state = IntakeState.STOW;
   }
 
   /*-------------------------------- Generic Subsystem Functions --------------------------------*/
@@ -129,21 +138,36 @@ public class Algae extends Subsystem {
 
   public void stow() {
     mPeriodicIO.wrist_target_angle = Constants.Algae.kStowAngle;
+
+    mPeriodicIO.state = IntakeState.STOW;
     // mPeriodicIO.intake_power = 0.0;
   }
 
   public void grabAlgae() {
     mPeriodicIO.wrist_target_angle = Constants.Algae.kDeAlgaeAngle;
     mPeriodicIO.intake_power = Constants.Algae.kIntakeSpeed;
+
+    mPeriodicIO.state = IntakeState.DEALGAE;
   }
 
   public void score() {
-    mPeriodicIO.intake_power = Constants.Algae.kEjectSpeed;
+    if (mPeriodicIO.state == IntakeState.GROUND) {
+      mPeriodicIO.intake_power = -Constants.Algae.kEjectSpeed;
+    } else {
+      mPeriodicIO.intake_power = Constants.Algae.kEjectSpeed;
+    }
   }
 
   public void groundIntake() {
     mPeriodicIO.wrist_target_angle = Constants.Algae.kGroundIntakeAngle;
     mPeriodicIO.intake_power = Constants.Algae.kGroundIntakeSpeed;
+
+    mPeriodicIO.state = IntakeState.GROUND;
+  }
+
+  public void stopAlgae() {
+    mPeriodicIO.intake_power = 0.0;
+    mPeriodicIO.wrist_target_angle = Constants.Algae.kStowAngle;
   }
 
   /*---------------------------------- Custom Private Functions ---------------------------------*/
@@ -154,6 +178,10 @@ public class Algae extends Subsystem {
 
   public double getWristReferenceToHorizontal() {
     return getWristAngle() - Constants.Algae.kWristOffset;
+  }
+
+  public IntakeState getState() {
+    return mPeriodicIO.state;
   }
 
   // public double getSpeedFromState(IntakeState state) {

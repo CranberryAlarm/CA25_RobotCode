@@ -83,7 +83,7 @@ public class Robot extends LoggedRobot {
     m_allSubsystems.add(m_algae);
     m_allSubsystems.add(m_elevator);
 
-    // m_allSubsystems.add(m_leds);
+    m_allSubsystems.add(m_leds);
 
     // Set up the Field2d object for simulation
     SmartDashboard.putData("Field", m_field);
@@ -137,6 +137,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    m_leds.breathe();
   }
 
   double speed = 0;
@@ -162,7 +163,7 @@ public class Robot extends LoggedRobot {
     // FINAL CONTROLS
     if (m_driverController.getWantsStow()) {
       m_elevator.goToElevatorStow();
-      m_algae.stow();
+      // m_algae.stow();
     } else if (m_driverController.getWantsL2()) {
       m_elevator.goToElevatorL2();
       m_algae.stow();
@@ -178,6 +179,8 @@ public class Robot extends LoggedRobot {
     } else if (m_driverController.getWantsA2()) {
       m_elevator.goToAlgaeHigh();
       m_algae.grabAlgae();
+    } else if (m_driverController.getWantsStopAlgae()) {
+      m_algae.stopAlgae();
     } else if (m_driverController.getWantsEjectAlgae()) {
       m_algae.score();
     } else if (m_driverController.getWantsGroundAlgae()) {
@@ -232,7 +235,7 @@ public class Robot extends LoggedRobot {
     // m_coral.stopCoral();
     // }
 
-    if (m_operatorController.getWantsElevatorReset()) {
+    if (m_operatorController.getWantsElevatorReset() || m_driverController.getWantsElevatorReset()) {
       RobotTelemetry.print("Resetting elevator");
       m_elevator.reset();
     }

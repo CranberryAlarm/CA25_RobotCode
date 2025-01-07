@@ -64,6 +64,14 @@ public class DriverController extends FilteredController {
     return this.getHatUp();
   }
 
+  public boolean getWantsStopAlgae() {
+    return this.getHatRight();
+  }
+
+  public boolean getWantsElevatorReset() {
+    return this.getRawButton(7);
+  }
+
   public boolean getWantsEjectAlgae() {
     return this.getRawButton(6);
   }
