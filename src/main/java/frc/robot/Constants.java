@@ -31,8 +31,8 @@ public class Constants {
     public static final double kMaxHeight = 56.2;
     public static final double kGroundAlgaeHeight = 0.0;
     public static final double kScoreAlgaeHeight = 0.0;
-    public static final double kLowAlgaeHeight = 0.0;
-    public static final double kHighAlgaeHeight = 0.0;
+    public static final double kLowAlgaeHeight = 23.0;
+    public static final double kHighAlgaeHeight = 40.0;
   }
 
   public static class Coral {
@@ -81,15 +81,15 @@ public class Constants {
     public static final double kWristMaxAcceleration = 1380.0;
 
     public static final double kStowAngle = 233.0;
-    public static final double kDeAlgaeAngle = 190.0;
+    public static final double kDeAlgaeAngle = 215.0;
     public static final double kGroundIntakeAngle = 140.0;
 
     // INTAKE
-    public static final int kMaxIntakeCurrent = 80;
+    public static final int kMaxIntakeCurrent = 15;
 
-    public static final double kIntakeSpeed = 4.0;
-    public static final double kEjectSpeed = -4.0;
-    public static final double kGroundIntakeSpeed = -4.0;
+    public static final double kIntakeSpeed = 0.6;
+    public static final double kEjectSpeed = -0.3;
+    public static final double kGroundIntakeSpeed = -0.3;
   }
 
   public static class Intake {

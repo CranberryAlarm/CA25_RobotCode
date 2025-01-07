@@ -95,4 +95,8 @@ public abstract class Subsystem extends SubsystemBase {
   public void putData(String key, Sendable value) {
     SmartDashboard.putData(baseSmartDashboardKey + "/" + key, value);
   }
+
+  public void putNumber(String key, Elevator.ElevatorState value) {
+    Logger.recordOutput(baseSmartDashboardKey + "/" + key, value);
+  }
 }

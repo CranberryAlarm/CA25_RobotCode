@@ -85,11 +85,23 @@ public class Elevator extends Subsystem {
     mRightMotor.burnFlash();
   }
 
+  public enum ElevatorState {
+    NONE,
+    STOW,
+    L2,
+    L3,
+    L4,
+    A1,
+    A2
+  }
+
   private static class PeriodicIO {
     double elevator_target = 0.0;
     double elevator_power = 0.0;
 
     boolean is_elevator_pos_control = false;
+
+    ElevatorState state = ElevatorState.STOW;
   }
 
   /*-------------------------------- Generic Subsystem Functions --------------------------------*/
@@ -136,6 +148,8 @@ public class Elevator extends Subsystem {
 
     putNumber("Output/Left", mLeftMotor.getAppliedOutput());
     putNumber("Output/Right", mRightMotor.getAppliedOutput());
+
+    putNumber("State", mPeriodicIO.state);
   }
 
   @Override
@@ -144,6 +158,10 @@ public class Elevator extends Subsystem {
   }
 
   /*---------------------------------- Custom Public Functions ----------------------------------*/
+
+  public ElevatorState getState() {
+    return mPeriodicIO.state;
+  }
 
   public void setElevatorPower(double power) {
     putNumber("setElevatorPower", power);
@@ -154,21 +172,37 @@ public class Elevator extends Subsystem {
   public void goToElevatorStow() {
     mPeriodicIO.is_elevator_pos_control = true;
     mPeriodicIO.elevator_target = Constants.Elevator.kStowHeight;
+    mPeriodicIO.state = ElevatorState.STOW;
   }
 
   public void goToElevatorL2() {
     mPeriodicIO.is_elevator_pos_control = true;
     mPeriodicIO.elevator_target = Constants.Elevator.kL2Height;
+    mPeriodicIO.state = ElevatorState.L2;
   }
 
   public void goToElevatorL3() {
     mPeriodicIO.is_elevator_pos_control = true;
     mPeriodicIO.elevator_target = Constants.Elevator.kL3Height;
+    mPeriodicIO.state = ElevatorState.L3;
   }
 
   public void goToElevatorL4() {
     mPeriodicIO.is_elevator_pos_control = true;
     mPeriodicIO.elevator_target = Constants.Elevator.kL4Height;
+    mPeriodicIO.state = ElevatorState.L4;
+  }
+
+  public void goToAlgaeLow() {
+    mPeriodicIO.is_elevator_pos_control = true;
+    mPeriodicIO.elevator_target = Constants.Elevator.kLowAlgaeHeight;
+    mPeriodicIO.state = ElevatorState.A1;
+  }
+
+  public void goToAlgaeHigh() {
+    mPeriodicIO.is_elevator_pos_control = true;
+    mPeriodicIO.elevator_target = Constants.Elevator.kHighAlgaeHeight;
+    mPeriodicIO.state = ElevatorState.A2;
   }
 
   /*---------------------------------- Custom Private Functions ---------------------------------*/

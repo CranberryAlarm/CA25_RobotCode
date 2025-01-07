@@ -159,47 +159,72 @@ public class Robot extends LoggedRobot {
 
     m_drive.drive(xSpeed, rot);
 
-    // ALGAE
-    if (m_driverController.getWantsAlgaeStow()) {
+    // FINAL CONTROLS
+    if (m_driverController.getWantsStow()) {
+      m_elevator.goToElevatorStow();
       m_algae.stow();
-    } else if (m_driverController.getWantsAlgaeGrab()) {
-      m_algae.grabAlgae();
-    } else if (m_driverController.getWantsAlgaeScore()) {
-      m_algae.score();
-    } else if (m_driverController.getWantsAlgaeGroundIntake()) {
-      m_algae.groundIntake();
+    } else if (m_driverController.getWantsL2()) {
+      m_elevator.goToElevatorL2();
+      m_algae.stow();
+    } else if (m_driverController.getWantsL3()) {
+      m_elevator.goToElevatorL3();
+      m_algae.stow();
+    } else if (m_driverController.getWantsL4()) {
+      m_elevator.goToElevatorL4();
+      m_algae.stow();
     }
+
+    if (m_driverController.getWantsScoreCoral()) {
+      if (m_elevator.getState() == Elevator.ElevatorState.STOW) {
+        m_coral.scoreL1();
+      } else {
+        m_coral.scoreL24();
+      }
+    } else {
+      m_coral.stopCoral();
+    }
+
+    // ALGAE
+    // if (m_driverController.getWantsAlgaeStow()) {
+    // m_algae.stow();
+    // } else if (m_driverController.getWantsAlgaeGrab()) {
+    // m_algae.grabAlgae();
+    // } else if (m_driverController.getWantsAlgaeScore()) {
+    // m_algae.score();
+    // } else if (m_driverController.getWantsAlgaeGroundIntake()) {
+    // m_algae.groundIntake();
+    // }
 
     // ELEVATOR
     // m_elevator.setElevatorPower(m_operatorController.getElevatorAxis());
-    if (m_operatorController.getWantsElevatorStow()) {
-      m_elevator.goToElevatorStow();
-    } else if (m_operatorController.getWantsElevatorL2()) {
-      m_elevator.goToElevatorL2();
-    } else if (m_operatorController.getWantsElevatorL3()) {
-      m_elevator.goToElevatorL3();
-    } else if (m_operatorController.getWantsElevatorL4()) {
-      m_elevator.goToElevatorL4();
-    }
+    // if (m_operatorController.getWantsElevatorStow()) {
+    // m_elevator.goToElevatorStow();
+    // } else if (m_operatorController.getWantsElevatorL2()) {
+    // m_elevator.goToElevatorL2();
+    // } else if (m_operatorController.getWantsElevatorL3()) {
+    // m_elevator.goToElevatorL3();
+    // } else if (m_operatorController.getWantsElevatorL4()) {
+    // m_elevator.goToElevatorL4();
+    // }
+
+    // CORAL
+    // if (m_operatorController.getWantsCoralIntake()) {
+    // m_coral.intake();
+    // } else if (m_operatorController.getWantsCoralReverse()) {
+    // m_coral.reverse();
+    // } else if (m_operatorController.getWantsCoralIndex()) {
+    // m_coral.index();
+    // } else if (m_operatorController.getWantsCoralL1()) {
+    // m_coral.scoreL1();
+    // } else if (m_operatorController.getWantsCoralL24()) {
+    // m_coral.scoreL24();
+    // } else {
+    // m_coral.stopCoral();
+    // }
 
     if (m_operatorController.getWantsElevatorReset()) {
       RobotTelemetry.print("Resetting elevator");
       m_elevator.reset();
-    }
-
-    // CORAL
-    if (m_operatorController.getWantsCoralIntake()) {
-      m_coral.intake();
-    } else if (m_operatorController.getWantsCoralReverse()) {
-      m_coral.reverse();
-    } else if (m_operatorController.getWantsCoralIndex()) {
-      m_coral.index();
-    } else if (m_operatorController.getWantsCoralL1()) {
-      m_coral.scoreL1();
-    } else if (m_operatorController.getWantsCoralL24()) {
-      m_coral.scoreL24();
-    } else {
-      m_coral.stopCoral();
     }
 
     // // Intake

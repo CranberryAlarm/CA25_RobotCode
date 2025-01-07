@@ -24,6 +24,14 @@ public class Algae extends Subsystem {
     return mInstance;
   }
 
+  public enum IntakeState {
+    NONE,
+    INTAKE,
+    INDEX,
+    READY,
+    SCORE
+  }
+
   private SimulatableCANSparkMax mWristMotor;
   private final ProfiledPIDController mWristPIDController;
   private final ArmFeedforward mWristFeedForward;
@@ -95,8 +103,8 @@ public class Algae extends Subsystem {
   public void writePeriodicOutputs() {
     mWristMotor.set(mPeriodicIO.wrist_voltage);
 
-    // mIntakeMotor.set(mPeriodicIO.intake_power);
-    mIntakeMotor.setVoltage(mPeriodicIO.intake_power);
+    mIntakeMotor.set(mPeriodicIO.intake_power);
+    // mIntakeMotor.setVoltage(mPeriodicIO.intake_power);
   }
 
   @Override
@@ -156,4 +164,19 @@ public class Algae extends Subsystem {
   public double getWristReferenceToHorizontal() {
     return getWristAngle() - Constants.Algae.kWristOffset;
   }
+
+  // public double getSpeedFromState(IntakeState state) {
+  // switch (state) {
+  // case NONE:
+  // return 0.0;
+  // case INTAKE:
+  // return RobotConstants.config.Intake.k_intakeSpeed;
+  // case INDEX:
+  // return RobotConstants.config.Intake.k_ejectSpeed;
+  // case READY:
+  // return RobotConstants.config.Intake.k_feedShooterSpeed;
+  // default:
+  // return 0.0;
+  // }
+  // }
 }
