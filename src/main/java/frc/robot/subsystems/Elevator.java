@@ -91,7 +91,8 @@ public class Elevator extends Subsystem {
     mLeftMotor.burnFlash();
     mRightMotor.burnFlash();
 
-    mProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(Constants.Elevator.kMaxVelocity, Constants.Elevator.kMaxAcceleration));
+    mProfile = new TrapezoidProfile(
+        new TrapezoidProfile.Constraints(Constants.Elevator.kMaxVelocity, Constants.Elevator.kMaxAcceleration));
   }
 
   public enum ElevatorState {
@@ -146,7 +147,7 @@ public class Elevator extends Subsystem {
           Constants.Elevator.kG,
           ArbFFUnits.kVoltage);
     } else {
-      mCurState.position = mRightEncoder.getPosition();
+      mCurState.position = mLeftEncoder.getPosition();
       mCurState.velocity = 0;
       mLeftMotor.set(mPeriodicIO.elevator_power);
     }
@@ -162,10 +163,10 @@ public class Elevator extends Subsystem {
 
   @Override
   public void outputTelemetry() {
-    putNumber("Position/Current", mRightEncoder.getPosition());
+    putNumber("Position/Current", mLeftEncoder.getPosition());
     putNumber("Position/Target", mPeriodicIO.elevator_target);
-    putNumber("Velocity/Current", mRightEncoder.getVelocity());
-    
+    putNumber("Velocity/Current", mLeftEncoder.getVelocity());
+
     putNumber("Position/Setpoint", mCurState.position);
     putNumber("Velocity/Setpoint", mCurState.velocity);
 
@@ -180,7 +181,7 @@ public class Elevator extends Subsystem {
 
   @Override
   public void reset() {
-    mRightEncoder.setPosition(0.0);
+    mLeftEncoder.setPosition(0.0);
   }
 
   /*---------------------------------- Custom Public Functions ----------------------------------*/

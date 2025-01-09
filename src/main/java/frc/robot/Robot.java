@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.autonomous.AutoRunner;
@@ -195,6 +196,7 @@ public class Robot extends LoggedRobot {
       }
     } else if (m_driverController.getWantsIntakeCoral()) {
       m_coral.intake();
+      m_elevator.goToElevatorStow();
     }
 
     // ALGAE
@@ -281,7 +283,9 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
-    m_leds.rainbow();
+    // m_leds.rainbow();
+    m_leds.setColor(Color.kRed);
+
     speed = 0;
     m_allSubsystems.forEach(subsystem -> subsystem.stop());
 
