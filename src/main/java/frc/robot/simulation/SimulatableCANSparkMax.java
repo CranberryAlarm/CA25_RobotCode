@@ -1,10 +1,13 @@
 package frc.robot.simulation;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
+
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 
-public class SimulatableCANSparkMax extends CANSparkMax {
+public class SimulatableCANSparkMax extends SparkMax {
   SimDeviceSim mCANSparkMaxSim;
 
   SimDouble mCANSparkMaxSimAppliedOutput;
@@ -16,6 +19,13 @@ public class SimulatableCANSparkMax extends CANSparkMax {
     mCANSparkMaxSimAppliedOutput = mCANSparkMaxSim.getDouble("Applied Output");
 
     // TODO: Add other simulation fields
+  }
+
+  @Override
+  public REVLibError configure(SparkBaseConfig config, ResetMode resetMode, PersistMode persistMode) {
+      // return super.configure(config, resetMode, persistMode);
+      // Just throw away everything for now and say we're ok.
+      return REVLibError.kOk;
   }
 
   @Override

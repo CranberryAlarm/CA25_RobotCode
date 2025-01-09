@@ -1,10 +1,14 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import frc.robot.Constants;
@@ -22,11 +26,8 @@ public class Shooter extends Subsystem {
     return mInstance;
   }
 
-  private CANSparkFlex mLeftShooterMotor;
-  private CANSparkFlex mRightShooterMotor;
-
-  private SparkPIDController mLeftShooterPID;
-  private SparkPIDController mRightShooterPID;
+  private SparkFlex mLeftShooterMotor;
+  private SparkFlex mRightShooterMotor;
 
   private RelativeEncoder mLeftShooterEncoder;
   private RelativeEncoder mRightShooterEncoder;
@@ -38,34 +39,26 @@ public class Shooter extends Subsystem {
 
     mPeriodicIO = new PeriodicIO();
 
-    mLeftShooterMotor = new CANSparkFlex(Constants.kShooterLeftMotorId, MotorType.kBrushless);
-    mRightShooterMotor = new CANSparkFlex(Constants.kShooterRightMotorId, MotorType.kBrushless);
-    mLeftShooterMotor.restoreFactoryDefaults();
-    mRightShooterMotor.restoreFactoryDefaults();
+    mLeftShooterMotor = new SparkFlex(Constants.kShooterLeftMotorId, MotorType.kBrushless);
+    mRightShooterMotor = new SparkFlex(Constants.kShooterRightMotorId, MotorType.kBrushless);
 
-    mLeftShooterPID = mLeftShooterMotor.getPIDController();
-    mLeftShooterPID.setP(Constants.kShooterP);
-    mLeftShooterPID.setI(Constants.kShooterI);
-    mLeftShooterPID.setD(Constants.kShooterD);
-    mLeftShooterPID.setFF(Constants.kShooterFF);
-    mLeftShooterPID.setOutputRange(Constants.kShooterMinOutput, Constants.kShooterMaxOutput);
+    var shooterConfig = new SparkFlexConfig()
+      .idleMode(IdleMode.kCoast);
 
-    mRightShooterPID = mRightShooterMotor.getPIDController();
-    mRightShooterPID.setP(Constants.kShooterP);
-    mRightShooterPID.setI(Constants.kShooterI);
-    mRightShooterPID.setD(Constants.kShooterD);
-    mRightShooterPID.setFF(Constants.kShooterFF);
-    mRightShooterPID.setOutputRange(Constants.kShooterMinOutput, Constants.kShooterMaxOutput);
+    shooterConfig
+      .closedLoop
+        .pidf(Constants.kShooterP, Constants.kShooterI, Constants.kShooterD, Constants.kShooterFF)
+        .minOutput(Constants.kShooterMinOutput)
+        .maxOutput(Constants.kShooterMaxOutput);
 
+    var leftShooterConfig = new SparkFlexConfig()
+      .apply(shooterConfig)
+      .inverted(true);
+
+    mLeftShooterMotor.configure(leftShooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    mRightShooterMotor.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     mLeftShooterEncoder = mLeftShooterMotor.getEncoder();
     mRightShooterEncoder = mRightShooterMotor.getEncoder();
-
-    mLeftShooterMotor.setIdleMode(CANSparkFlex.IdleMode.kCoast);
-    mRightShooterMotor.setIdleMode(CANSparkFlex.IdleMode.kCoast);
-
-    mLeftShooterMotor.setInverted(true);
-    mRightShooterMotor.setInverted(false);
-
   }
 
   private static class PeriodicIO {
@@ -81,8 +74,8 @@ public class Shooter extends Subsystem {
   @Override
   public void writePeriodicOutputs() {
     double limitedSpeed = mSpeedLimiter.calculate(mPeriodicIO.shooter_rpm);
-    mLeftShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
-    mRightShooterPID.setReference(limitedSpeed, ControlType.kVelocity);
+    mLeftShooterMotor.getClosedLoopController().setReference(limitedSpeed, ControlType.kVelocity);
+    mRightShooterMotor.getClosedLoopController().setReference(limitedSpeed,ControlType.kVelocity);
   }
 
   @Override

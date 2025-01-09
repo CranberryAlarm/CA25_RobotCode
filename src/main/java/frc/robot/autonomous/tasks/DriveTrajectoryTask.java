@@ -1,18 +1,25 @@
 package frc.robot.autonomous.tasks;
 
+import static edu.wpi.first.units.Units.Kilogram;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import java.nio.file.Path;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.path.PathPlannerTrajectory.State;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -62,20 +69,22 @@ public class DriveTrajectoryTask extends Task {
     m_autoTrajectory = new PathPlannerTrajectory(
         m_autoPath,
         new ChassisSpeeds(),
-        m_drive.getPose().getRotation());
+        m_drive.getPose().getRotation(),
+        m_drive.getRobotConfig()
+        );
 
     if (m_autoPath.isReversed()) {
       RobotTelemetry.print("===== PATH IS REVERSED =====");
     }
 
-    double rotationErrorTolerance = Math.pow(m_autoPath.getGlobalConstraints().getMaxVelocityMps(), 1.25) * 0.25;
+    double rotationErrorTolerance = Math.pow(m_autoPath.getGlobalConstraints().maxVelocityMPS(), 1.25) * 0.25;
     // double translationErrorTolerance = m_autoPath.getGlobalConstraints().getMaxVelocityMps() * 0.0625;
 
     m_driveController = new PPLTVController(
         VecBuilder.fill(0.25, 0.25, 1.0),
         VecBuilder.fill(1.0, 2.0),
         0.02,
-        m_autoPath.getGlobalConstraints().getMaxVelocityMps());
+        m_autoPath.getGlobalConstraints().maxVelocityMPS());
 
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/trajectories/ramsete.html
     // m_driveController = new PPRamseteController(2, 0.7);
@@ -136,7 +145,7 @@ public class DriveTrajectoryTask extends Task {
 
   @Override
   public void update() {
-    State goal = m_autoTrajectory.sample(m_runningTimer.get());
+    PathPlannerTrajectoryState goal = m_autoTrajectory.sample(m_runningTimer.get());
     if (m_autoPath.isReversed()) {
       goal = goal.reverse();
     }
@@ -146,7 +155,7 @@ public class DriveTrajectoryTask extends Task {
 
     m_isFinished |= m_runningTimer.hasElapsed(m_autoTrajectory.getTotalTimeSeconds());
 
-    Logger.recordOutput("Auto/DriveTrajectory/TargetPose", goal.getDifferentialPose());
+    Logger.recordOutput("Auto/DriveTrajectory/TargetPose", goal.pose);
     Logger.recordOutput("Auto/DriveTrajectory/CurrentPose", m_drive.getPose());
 
     SmartDashboard.putNumber(m_smartDashboardKey + "vx", chassisSpeeds.vxMetersPerSecond);
@@ -157,15 +166,10 @@ public class DriveTrajectoryTask extends Task {
   @Override
   public void updateSim() {
     if (!RobotBase.isReal()) {
-      PathPlannerTrajectory.State autoState = (PathPlannerTrajectory.State) m_autoTrajectory
+      PathPlannerTrajectoryState autoState = m_autoTrajectory
           .sample(m_runningTimer.get());
 
-      Pose2d targetPose2d = new Pose2d(
-          autoState.positionMeters.getX(),
-          autoState.positionMeters.getY(),
-          autoState.heading);
-
-      m_drive.setPose(targetPose2d);
+      m_drive.setPose(autoState.pose);
     }
   }
 
@@ -182,11 +186,5 @@ public class DriveTrajectoryTask extends Task {
   public void done() {
     RobotTelemetry.print("Auto trajectory done");
     m_drive.drive(0, 0);
-  }
-
-  private void replanPath(Pose2d currentPose, ChassisSpeeds currentSpeeds) {
-    // NOTE: This dies if this is the first path
-    m_autoPath = m_autoPath.replan(currentPose, currentSpeeds);
-    m_autoTrajectory = m_autoPath.getTrajectory(currentSpeeds, currentPose.getRotation());
   }
 }
