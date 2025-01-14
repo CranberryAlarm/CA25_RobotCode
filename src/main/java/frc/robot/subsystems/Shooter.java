@@ -59,6 +59,9 @@ public class Shooter extends Subsystem {
     mRightShooterMotor.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     mLeftShooterEncoder = mLeftShooterMotor.getEncoder();
     mRightShooterEncoder = mRightShooterMotor.getEncoder();
+
+    mLeftShooterMotor.setInverted(true);
+    mRightShooterMotor.setInverted(false);
   }
 
   private static class PeriodicIO {

@@ -79,6 +79,8 @@ public class Drivetrain extends Subsystem {
 
   private static final double kSlowModeRotScale = 0.1;
   private static final double kSpeedModeScale = 2.0;
+  private static final double kTippyModeScale = 0.7;
+
   private static final double kTrackWidth = Units.inchesToMeters(20.75);
   private static final double kWheelRadius = Units.inchesToMeters(3.0);
   private static final double kGearRatio = 10.71;
@@ -102,6 +104,7 @@ public class Drivetrain extends Subsystem {
       Constants.Drive.kD);
 
   private final AHRS mGyro = new AHRS();
+  private final Elevator mElevator = Elevator.getInstance();
 
   private final DifferentialDriveKinematics mKinematics = new DifferentialDriveKinematics(kTrackWidth);
 
@@ -319,7 +322,15 @@ public class Drivetrain extends Subsystem {
       mPeriodicIO.diffWheelSpeeds = mKinematics
           .toWheelSpeeds(new ChassisSpeeds(xSpeed * kSpeedModeScale, 0, rot * kSlowModeRotScale));
     } else {
-      mPeriodicIO.diffWheelSpeeds = mKinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0, rot));
+      Elevator.ElevatorState state = mElevator.getState();
+
+      boolean highSetPoint = state == Elevator.ElevatorState.L4 ||
+          state == Elevator.ElevatorState.L3 ||
+          state == Elevator.ElevatorState.A2;
+
+      double scale = (highSetPoint ? kTippyModeScale : 1.0);
+
+      mPeriodicIO.diffWheelSpeeds = mKinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed * scale, 0, rot));
     }
   }
 

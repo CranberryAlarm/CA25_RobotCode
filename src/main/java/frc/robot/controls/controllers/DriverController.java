@@ -24,69 +24,76 @@ public class DriverController extends FilteredController {
     return -this.getFilteredAxis(4);
   }
 
-  public double getShooterAxis() {
-    return (this.getFilteredAxis(3) - 0.5) * 2;
-  }
-
-  public boolean getWantsFullIntake() {
-    return this.getRawButton(1);
-  }
-
-  public boolean getWantsIntake() {
-    return this.getRawButton(6);
-  }
-
-  public boolean getWantsEject() {
-    return this.getRawButton(2);
-  }
-
-  public boolean getWantsSource() {
-    return this.getRawButton(3);
-  }
-
-  public boolean getWantsStow() {
-    return this.getRawButton(4);
-  }
-
-  // public boolean getWantsFire() {
-  // return this.getHatUpPressed();
-  // }
-
-  public boolean getWantsMoreSpeed() {
-    return this.getHatUp();
-  }
-
-  public boolean getWantsLessSpeed() {
-    return this.getHatDown();
-  }
-
-  public boolean getWantsShooterStop() {
-    return this.getRawButton(5);
-  }
-
   public boolean getWantsSpeedMode() {
     return this.getFilteredAxis(2) > k_triggerActivationThreshold;
   }
 
-  public boolean getWantsSlowMode() {
-    return this.getFilteredAxis(3) > k_triggerActivationThreshold;
+  // public boolean getWantsSlowMode() {
+  // return this.getFilteredAxis(3) > k_triggerActivationThreshold;
+  // }
+
+  public boolean getWantsStow() {
+    return this.getRawButton(3);
   }
 
-  // Buttons
-  public boolean getWantsSomethingToggle() {
-    return this.getRawButtonPressed(1);
+  public boolean getWantsL2() {
+    return this.getRawButton(1);
   }
 
-  public boolean getWantsSomething2Toggle() {
-    return this.getRawButtonPressed(3);
+  public boolean getWantsL3() {
+    return this.getRawButton(2);
   }
 
-  public boolean getWantsResetGyro() {
+  public boolean getWantsL4() {
     return this.getRawButton(4);
   }
 
-  // public boolean getWantsBrake() {
-  // return this.getRawButton(5);
+  public boolean getWantsScoreCoral() {
+    return this.getFilteredAxis(3) > k_triggerActivationThreshold;
+  }
+
+  public boolean getWantsIntakeCoral() {
+    return this.getFilteredAxis(2) > k_triggerActivationThreshold;
+  }
+
+  public boolean getWantsA1() {
+    return this.getHatDown();
+  }
+
+  public boolean getWantsA2() {
+    return this.getHatUp();
+  }
+
+  public boolean getWantsStopAlgae() {
+    return this.getHatRight();
+  }
+
+  public boolean getWantsElevatorReset() {
+    return this.getRawButton(7);
+  }
+
+  public boolean getWantsEjectAlgae() {
+    return this.getRawButton(6);
+  }
+
+  public boolean getWantsGroundAlgae() {
+    return this.getRawButton(5);
+  }
+
+  // public boolean getWantsAlgaeStow() {
+  // return this.getRawButton(1);
+  // }
+
+  // public boolean getWantsAlgaeGrab() {
+  // return this.getRawButton(3);
+  // }
+
+  // public boolean getWantsAlgaeScore() {
+  // return this.getRawButton(2);
+  // }
+
+  // public boolean getWantsAlgaeGroundIntake() {
+  // return this.getRawButton(4);
   // }
 
   public void outputTelemetry() {

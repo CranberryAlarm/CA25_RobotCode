@@ -12,7 +12,7 @@ Cranberry Alarm's 2025 robot code.
 
 ## Documentation
 
-- [2024 Game Manual](https://firstfrc.blob.core.windows.net/frc2024/Manual/2024GameManual.pdf)
+- [2025 Game Manual](https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf)
 - [WPILib Documentation](https://docs.wpilib.org/en/stable/index.html)
 
 ## Build

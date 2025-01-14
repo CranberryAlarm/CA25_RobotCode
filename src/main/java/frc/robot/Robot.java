@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.autonomous.AutoRunner;
@@ -24,8 +25,11 @@ import frc.robot.autonomous.tasks.Task;
 import frc.robot.controls.controllers.DriverController;
 import frc.robot.controls.controllers.OperatorController;
 import frc.robot.simulation.Field;
+import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Compressor;
+import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.leds.LEDs;
 
@@ -52,8 +56,11 @@ public class Robot extends LoggedRobot {
   // private final Intake m_intake = Intake.getInstance();
   private final Compressor m_compressor = Compressor.getInstance();
   private final Drivetrain m_drive = Drivetrain.getInstance();
+  private final Coral m_coral = Coral.getInstance();
+  private final Algae m_algae = Algae.getInstance();
   // private final Shooter m_shooter = Shooter.getInstance();
-  // private final Climber m_climber = Climber.getInstance();
+  private final Elevator m_elevator = Elevator.getInstance();
+
   public final LEDs m_leds = LEDs.getInstance();
 
   // Auto stuff
@@ -71,11 +78,12 @@ public class Robot extends LoggedRobot {
     setupLogging();
 
     // Add all subsystems to the list
-    // m_allSubsystems.add(m_intake);
-    m_allSubsystems.add(m_compressor);
+    // m_allSubsystems.add(m_compressor);
     m_allSubsystems.add(m_drive);
-    // m_allSubsystems.add(m_shooter);
-    // m_allSubsystems.add(m_climber);
+    m_allSubsystems.add(m_coral);
+    m_allSubsystems.add(m_algae);
+    m_allSubsystems.add(m_elevator);
+
     m_allSubsystems.add(m_leds);
 
     // Set up the Field2d object for simulation
@@ -92,7 +100,7 @@ public class Robot extends LoggedRobot {
     updateSim();
 
     // Used by sysid
-    if (this.isTestEnabled()){
+    if (this.isTestEnabled()) {
       CommandScheduler.getInstance().run();
     }
   }
@@ -130,6 +138,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    m_leds.breathe();
   }
 
   double speed = 0;
@@ -152,50 +161,117 @@ public class Robot extends LoggedRobot {
 
     m_drive.drive(xSpeed, rot);
 
-    // // Shooter variable speed
-    // if (m_driverController.getWantsMoreSpeed() || m_operatorController.getWantsMoreSpeed()) {
-    //   m_leds.setColor(Color.kPink);
-    //   speed = 3000;
-    // } else if (m_driverController.getWantsLessSpeed() || m_operatorController.getWantsLessSpeed()) {
-    //   m_leds.setColor(Color.kOrange);
-    //   speed = 430;
-    // } else if (m_driverController.getWantsShooterStop() || m_operatorController.getWantsShooterStop()) {
-    //   m_leds.defaultLEDS();
-    //   speed = 0;
+    // FINAL CONTROLS
+    if (m_driverController.getWantsStow()) {
+      m_elevator.goToElevatorStow();
+      // m_algae.stow();
+    } else if (m_driverController.getWantsL2()) {
+      m_elevator.goToElevatorL2();
+      m_algae.stow();
+    } else if (m_driverController.getWantsL3()) {
+      m_elevator.goToElevatorL3();
+      m_algae.stow();
+    } else if (m_driverController.getWantsL4()) {
+      m_elevator.goToElevatorL4();
+      m_algae.stow();
+    } else if (m_driverController.getWantsA1()) {
+      m_elevator.goToAlgaeLow();
+      m_algae.grabAlgae();
+    } else if (m_driverController.getWantsA2()) {
+      m_elevator.goToAlgaeHigh();
+      m_algae.grabAlgae();
+    } else if (m_driverController.getWantsStopAlgae()) {
+      m_algae.stopAlgae();
+    } else if (m_driverController.getWantsEjectAlgae()) {
+      m_algae.score();
+    } else if (m_driverController.getWantsGroundAlgae()) {
+      m_algae.groundIntake();
+    }
+
+    if (m_driverController.getWantsScoreCoral()) {
+      if (m_elevator.getState() == Elevator.ElevatorState.STOW) {
+        m_coral.scoreL1();
+      } else {
+        m_coral.scoreL24();
+      }
+    } else if (m_driverController.getWantsIntakeCoral()) {
+      m_coral.intake();
+      m_elevator.goToElevatorStow();
+    }
+
+    // ALGAE
+    // if (m_driverController.getWantsAlgaeStow()) {
+    // m_algae.stow();
+    // } else if (m_driverController.getWantsAlgaeGrab()) {
+    // m_algae.grabAlgae();
+    // } else if (m_driverController.getWantsAlgaeScore()) {
+    // m_algae.score();
+    // } else if (m_driverController.getWantsAlgaeGroundIntake()) {
+    // m_algae.groundIntake();
     // }
-    // speed = MathUtil.clamp(speed, -6000, 10000);
-    // m_shooter.setSpeed(speed);
+
+    // ELEVATOR
+    // m_elevator.setElevatorPower(m_operatorController.getElevatorAxis());
+    // if (m_operatorController.getWantsElevatorStow()) {
+    // m_elevator.goToElevatorStow();
+    // } else if (m_operatorController.getWantsElevatorL2()) {
+    // m_elevator.goToElevatorL2();
+    // } else if (m_operatorController.getWantsElevatorL3()) {
+    // m_elevator.goToElevatorL3();
+    // } else if (m_operatorController.getWantsElevatorL4()) {
+    // m_elevator.goToElevatorL4();
+    // }
+
+    // CORAL
+    // if (m_operatorController.getWantsCoralIntake()) {
+    // m_coral.intake();
+    // } else if (m_operatorController.getWantsCoralReverse()) {
+    // m_coral.reverse();
+    // } else if (m_operatorController.getWantsCoralIndex()) {
+    // m_coral.index();
+    // } else if (m_operatorController.getWantsCoralL1()) {
+    // m_coral.scoreL1();
+    // } else if (m_operatorController.getWantsCoralL24()) {
+    // m_coral.scoreL24();
+    // } else {
+    // m_coral.stopCoral();
+    // }
+
+    if (m_operatorController.getWantsElevatorReset() || m_driverController.getWantsElevatorReset()) {
+      RobotTelemetry.print("Resetting elevator");
+      m_elevator.reset();
+    }
 
     // // Intake
     // if (m_driverController.getWantsFullIntake()) {
-    //   m_intake.goToGround();
+    // m_intake.goToGround();
     // } else if (m_driverController.getWantsIntake()) {
-    //   if (m_intake.getIntakeHasNote()) {
-    //     m_intake.pulse();
-    //   } else {
-    //     m_intake.intake();
-    //   }
+    // if (m_intake.getIntakeHasNote()) {
+    // m_intake.pulse();
+    // } else {
+    // m_intake.intake();
+    // }
     // } else if (m_driverController.getWantsEject()) {
-    //   m_intake.eject();
+    // m_intake.eject();
     // } else if (m_driverController.getWantsSource()) {
-    //   m_intake.goToSource();
+    // m_intake.goToSource();
     // } else if (m_driverController.getWantsStow()) {
-    //   m_intake.goToStow();
+    // m_intake.goToStow();
     // } else if (m_intake.getIntakeState() != IntakeState.INTAKE) {
-    //   m_intake.stopIntake();
+    // m_intake.stopIntake();
     // }
 
     // // Climber
     // if (m_operatorController.getWantsClimberClimb()) {
-    //   m_climber.climb();
+    // m_climber.climb();
     // } else if (m_operatorController.getWantsClimberRelease()) {
-    //   m_climber.release();
+    // m_climber.release();
     // } else if (m_operatorController.getWantsClimberTiltLeft()) {
-    //   m_climber.tiltLeft();
+    // m_climber.tiltLeft();
     // } else if (m_operatorController.getWantsClimberTiltRight()) {
-    //   m_climber.tiltRight();
+    // m_climber.tiltRight();
     // } else {
-    //   m_climber.stopClimber();
+    // m_climber.stopClimber();
     // }
 
     // if (m_operatorController.getWantsBrakeMode()) {
@@ -207,7 +283,9 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
-    m_leds.rainbow();
+    // m_leds.rainbow();
+    m_leds.setColor(Color.kRed);
+
     speed = 0;
     m_allSubsystems.forEach(subsystem -> subsystem.stop());
 
