@@ -1,9 +1,10 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkPIDController;
-import com.thethriftybot.ThriftyNova.PIDConfig;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
@@ -38,11 +39,7 @@ public class Coral extends Subsystem {
   // private ThriftyNova mLeftMotor;
   // private ThriftyNova mRightMotor;
   private SimulatableCANSparkMax mLeftMotor;
-  private SparkPIDController mLeftPIDController;
   private SimulatableCANSparkMax mRightMotor;
-  private SparkPIDController mRightPIDController;
-
-  private PIDConfig mPIDConfig;
 
   private LaserCan mLaserCAN;
 
@@ -51,56 +48,21 @@ public class Coral extends Subsystem {
 
     mPeriodicIO = new PeriodicIO();
 
-    // mLeftMotor = new ThriftyNova(Constants.Coral.kLeftMotorId);
-    // mRightMotor = new ThriftyNova(Constants.Coral.kRightMotorId);
     mLeftMotor = new SimulatableCANSparkMax(Constants.Coral.kLeftMotorId, MotorType.kBrushless);
     mRightMotor = new SimulatableCANSparkMax(Constants.Coral.kRightMotorId, MotorType.kBrushless);
 
-    // mLeftMotor.factoryReset();
-    // mRightMotor.factoryReset();
+    SparkMaxConfig coralConfig = new SparkMaxConfig();
 
-    // mLeftMotor.setBrakeMode(true);
-    // mRightMotor.setBrakeMode(true);
-    mLeftMotor.setIdleMode(IdleMode.kBrake);
-    mRightMotor.setIdleMode(IdleMode.kBrake);
+    coralConfig.idleMode(IdleMode.kBrake);
 
-    // mLeftPIDController = mLeftMotor.getPIDController();
-    // mLeftPIDController.setP(Constants.Coral.kP);
-    // mLeftPIDController.setI(Constants.Coral.kI);
-    // mLeftPIDController.setD(Constants.Coral.kD);
-    // mLeftPIDController.setIZone(Constants.Coral.kIZone);
-
-    // mRightPIDController = mRightMotor.getPIDController();
-    // mRightPIDController.setP(Constants.Coral.kP);
-    // mRightPIDController.setI(Constants.Coral.kI);
-    // mRightPIDController.setD(Constants.Coral.kD);
-    // mRightPIDController.setIZone(Constants.Coral.kIZone);
-
-    // mLeftMotor.setMaxCurrent(CurrentType.STATOR, Constants.Coral.kMaxCurrent);
-    // mRightMotor.setMaxCurrent(CurrentType.STATOR, Constants.Coral.kMaxCurrent);
-
-    // mLeftMotor.setMaxCurrent(CurrentType.STATOR, 200.0);
-    // mRightMotor.setMaxCurrent(CurrentType.STATOR, 200.0);
-
-    // mLeftMotor.setMaxCurrent(CurrentType.SUPPLY, 200.0);
-    // mRightMotor.setMaxCurrent(CurrentType.SUPPLY, 200.0);
-
-    // mLeftMotor.setRampUp(0.5);
-    // mRightMotor.setRampUp(0.5);
-
-    // mLeftMotor.setMaxOutput(1.0);
-    // mRightMotor.setMaxOutput(1.0);
-
-    // mPIDConfig = mRightMotor.pid0;
-    // mPIDConfig.setP(Constants.Coral.kP);
-    // mPIDConfig.setI(Constants.Coral.kI);
-    // mPIDConfig.setD(Constants.Coral.kD);
-    // mPIDConfig.setIZone(Constants.Coral.kIZone);
-
-    // TODO: Make sure we're inverting the correct motor
-    // mLeftMotor.setInverted(true);
-    // mLeftMotor.setInversion(false);
-    // mRightMotor.setInversion(false);
+    mLeftMotor.configure(
+        coralConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+    mRightMotor.configure(
+        coralConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     mLaserCAN = new LaserCan(Constants.Coral.kLaserId);
     try {
@@ -134,12 +96,6 @@ public class Coral extends Subsystem {
 
   @Override
   public void writePeriodicOutputs() {
-    // mLeftMotor.setVelocity(mPeriodicIO.rpm - mPeriodicIO.speed_diff);
-    // mRightMotor.setVelocity(mPeriodicIO.rpm);
-
-    // mLeftMotor.setPercent(mPeriodicIO.rpm - mPeriodicIO.speed_diff);
-    // mRightMotor.setPercent(-mPeriodicIO.rpm);
-
     mLeftMotor.set(mPeriodicIO.rpm - mPeriodicIO.speed_diff);
     mRightMotor.set(-mPeriodicIO.rpm);
   }
@@ -154,12 +110,6 @@ public class Coral extends Subsystem {
   @Override
   public void outputTelemetry() {
     putNumber("RPM/target", mPeriodicIO.rpm);
-
-    // putNumber("RPM/Left/Position", mLeftMotor.getPosition());
-    // putNumber("RPM/Right/Position", mRightMotor.getPosition());
-
-    // putNumber("RPM/Left/Velocity", mLeftMotor.getVelocity());
-    // putNumber("RPM/Right/Velocity", mRightMotor.getVelocity());
 
     LaserCan.Measurement measurement = mPeriodicIO.measurement;
     if (measurement != null) {

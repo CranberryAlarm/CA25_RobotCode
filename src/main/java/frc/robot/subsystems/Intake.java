@@ -1,14 +1,11 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
-
-import javax.annotation.processing.ProcessingEnvironment;
-
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
@@ -128,7 +125,8 @@ public class Intake extends Subsystem {
   public void outputTelemetry() {
     putNumber("Speed", intakeStateToSpeed(m_periodicIO.intake_state));
     putNumber("Pivot/Abs Enc (get)", m_pivotEncoder.get());
-    // putNumber("Pivot/Abs Enc (getAbsolutePosition)", m_pivotEncoder.getAbsolutePosition());
+    // putNumber("Pivot/Abs Enc (getAbsolutePosition)",
+    // m_pivotEncoder.getAbsolutePosition());
     putNumber("Pivot/Abs Enc (getPivotAngleDegrees)", getPivotAngleDegrees());
     putNumber("Pivot/Setpoint", pivotTargetToAngle(m_periodicIO.pivot_target));
 

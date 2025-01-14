@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -7,8 +8,6 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import frc.robot.Constants;
@@ -43,17 +42,16 @@ public class Shooter extends Subsystem {
     mRightShooterMotor = new SparkFlex(Constants.kShooterRightMotorId, MotorType.kBrushless);
 
     var shooterConfig = new SparkFlexConfig()
-      .idleMode(IdleMode.kCoast);
+        .idleMode(IdleMode.kCoast);
 
-    shooterConfig
-      .closedLoop
+    shooterConfig.closedLoop
         .pidf(Constants.kShooterP, Constants.kShooterI, Constants.kShooterD, Constants.kShooterFF)
         .minOutput(Constants.kShooterMinOutput)
         .maxOutput(Constants.kShooterMaxOutput);
 
     var leftShooterConfig = new SparkFlexConfig()
-      .apply(shooterConfig)
-      .inverted(true);
+        .apply(shooterConfig)
+        .inverted(true);
 
     mLeftShooterMotor.configure(leftShooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     mRightShooterMotor.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -78,7 +76,7 @@ public class Shooter extends Subsystem {
   public void writePeriodicOutputs() {
     double limitedSpeed = mSpeedLimiter.calculate(mPeriodicIO.shooter_rpm);
     mLeftShooterMotor.getClosedLoopController().setReference(limitedSpeed, ControlType.kVelocity);
-    mRightShooterMotor.getClosedLoopController().setReference(limitedSpeed,ControlType.kVelocity);
+    mRightShooterMotor.getClosedLoopController().setReference(limitedSpeed, ControlType.kVelocity);
   }
 
   @Override

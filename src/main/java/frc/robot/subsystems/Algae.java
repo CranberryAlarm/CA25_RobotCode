@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -46,9 +49,16 @@ public class Algae extends Subsystem {
 
     // WRIST
     mWristMotor = new SimulatableCANSparkMax(Constants.Algae.kWristMotorId, MotorType.kBrushless);
-    mWristMotor.restoreFactoryDefaults();
-    mWristMotor.setIdleMode(IdleMode.kCoast);
-    mWristMotor.setSmartCurrentLimit(Constants.Algae.kMaxWristCurrent);
+    SparkMaxConfig wristConfig = new SparkMaxConfig();
+    wristConfig
+        .idleMode(IdleMode.kCoast)
+        .smartCurrentLimit(Constants.Algae.kMaxWristCurrent)
+        .inverted(true);
+
+    mWristMotor.configure(
+        wristConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     // Wrist PID
     mWristPIDController = new ProfiledPIDController(
@@ -68,16 +78,17 @@ public class Algae extends Subsystem {
 
     // INTAKE
     mIntakeMotor = new SimulatableCANSparkMax(Constants.Algae.kIntakeMotorId, MotorType.kBrushless);
-    mIntakeMotor.restoreFactoryDefaults();
-    mIntakeMotor.setIdleMode(IdleMode.kBrake);
-    mIntakeMotor.setSmartCurrentLimit(Constants.Algae.kMaxIntakeCurrent);
+    SparkMaxConfig intakeConfig = new SparkMaxConfig();
 
-    mIntakeMotor.setInverted(true);
+    intakeConfig
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(Constants.Algae.kMaxIntakeCurrent)
+        .inverted(true);
 
-    mWristMotor.setInverted(true);
-
-    mWristMotor.burnFlash();
-    mIntakeMotor.burnFlash();
+    mIntakeMotor.configure(
+        intakeConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
   }
 
   private static class PeriodicIO {
@@ -173,7 +184,10 @@ public class Algae extends Subsystem {
   /*---------------------------------- Custom Private Functions ---------------------------------*/
 
   public double getWristAngle() {
-    return Units.rotationsToDegrees(mWristAbsEncoder.getAbsolutePosition());
+    // TODO:
+    // This used to be `getAbsolutePosition` in the old API
+    // but I'm not sure if `get` is the correct replacement
+    return Units.rotationsToDegrees(mWristAbsEncoder.get());
   }
 
   public double getWristReferenceToHorizontal() {

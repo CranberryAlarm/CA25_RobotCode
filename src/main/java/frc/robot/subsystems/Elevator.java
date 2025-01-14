@@ -1,11 +1,15 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
@@ -30,69 +34,56 @@ public class Elevator extends Subsystem {
 
   private SimulatableCANSparkMax mLeftMotor;
   private RelativeEncoder mLeftEncoder;
-  private SparkPIDController mLeftPIDController;
+  private SparkClosedLoopController mLeftPIDController;
 
   private SimulatableCANSparkMax mRightMotor;
   private RelativeEncoder mRightEncoder;
-  private SparkPIDController mRightPIDController;
+  private SparkClosedLoopController mRightPIDController;
 
   private TrapezoidProfile mProfile;
   private TrapezoidProfile.State mCurState = new TrapezoidProfile.State();
   private TrapezoidProfile.State mGoalState = new TrapezoidProfile.State();
   private double prevUpdateTime = Timer.getFPGATimestamp();
 
-  // private RelativeEncoder mLeftEncoder;
-  // private SparkMaxLimitSwitch mLowerLimit;
-  // private SparkMaxLimitSwitch mUpperLimit;
-
-  // private SlewRateLimiter mSpeedLimiter = new SlewRateLimiter(1000);
-
-  private void setUpElevatorMotor(SimulatableCANSparkMax motor, SparkPIDController pidController) {
-    motor.restoreFactoryDefaults();
-    motor.setIdleMode(IdleMode.kBrake);
-    motor.setSmartCurrentLimit(Constants.Elevator.kMaxCurrent);
-    // mLeftEncoder = motor.getEncoder();
-
-    pidController.setP(Constants.Elevator.kP);
-    pidController.setI(Constants.Elevator.kI);
-    pidController.setD(Constants.Elevator.kD);
-    pidController.setIZone(Constants.Elevator.kIZone);
-    // pidController.setIMaxAccum(0.001, 0)
-
-    // mLeftPIDController.setOutputRange(Constants.Elevator.kMaxPowerUp,
-    // Constants.Elevator.kMaxPowerDown);
-
-    // motor.setClosedLoopRampRate(kExtensionCLRampRate);
-
-    // mLowerLimit = mLeftMotor.getReverseLimitSwitch(Type.kNormallyOpen);
-    // mUpperLimit = mLeftMotor.getForwardLimitSwitch(Type.kNormallyOpen);
-  }
-
   private Elevator() {
     super("Elevator");
 
     mPeriodicIO = new PeriodicIO();
 
+    SparkMaxConfig elevatorConfig = new SparkMaxConfig();
+
+    elevatorConfig.closedLoop
+        .pid(Constants.Elevator.kP, Constants.Elevator.kI, Constants.Elevator.kD)
+        .iZone(Constants.Elevator.kIZone)
+        .minOutput(Constants.Elevator.kMaxPowerDown)
+        .maxOutput(Constants.Elevator.kMaxPowerUp);
+
+    elevatorConfig.smartCurrentLimit(Constants.Elevator.kMaxCurrent);
+
+    elevatorConfig.idleMode(IdleMode.kBrake);
+
     // LEFT ELEVATOR MOTOR
     mLeftMotor = new SimulatableCANSparkMax(Constants.Elevator.kElevatorLeftMotorId, MotorType.kBrushless);
     mLeftEncoder = mLeftMotor.getEncoder();
-    mLeftPIDController = mLeftMotor.getPIDController();
-    setUpElevatorMotor(mLeftMotor, mLeftPIDController);
+    mLeftPIDController = mLeftMotor.getClosedLoopController();
+    mLeftMotor.configure(
+        elevatorConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     // RIGHT ELEVATOR MOTOR
     mRightMotor = new SimulatableCANSparkMax(Constants.Elevator.kElevatorRightMotorId, MotorType.kBrushless);
     mRightEncoder = mRightMotor.getEncoder();
-    mRightPIDController = mRightMotor.getPIDController();
-    setUpElevatorMotor(mRightMotor, mRightPIDController);
-
-    // mRightMotor.setInverted(true);
-    mRightMotor.follow(mLeftMotor, true);
-
-    mLeftMotor.burnFlash();
-    mRightMotor.burnFlash();
+    mRightPIDController = mRightMotor.getClosedLoopController();
+    mRightMotor.configure(
+        elevatorConfig.follow(mLeftMotor),
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     mProfile = new TrapezoidProfile(
-        new TrapezoidProfile.Constraints(Constants.Elevator.kMaxVelocity, Constants.Elevator.kMaxAcceleration));
+        new TrapezoidProfile.Constraints(
+            Constants.Elevator.kMaxVelocity,
+            Constants.Elevator.kMaxAcceleration));
   }
 
   public enum ElevatorState {
@@ -142,8 +133,8 @@ public class Elevator extends Subsystem {
       // Set PID controller to new state
       mLeftPIDController.setReference(
           mCurState.position,
-          CANSparkMax.ControlType.kPosition,
-          0,
+          SparkBase.ControlType.kPosition,
+          ClosedLoopSlot.kSlot0,
           Constants.Elevator.kG,
           ArbFFUnits.kVoltage);
     } else {

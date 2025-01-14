@@ -1,15 +1,13 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.Constants;
 
@@ -42,25 +40,25 @@ public class Climber extends Subsystem {
 
     var climberConfig = new SparkMaxConfig();
     climberConfig.closedLoop.pid(Constants.kClimberP, Constants.kClimberI, Constants.kClimberD)
-                            .minOutput(Constants.kClimberMinOutput)
-                            .maxOutput(Constants.kClimberMaxOutput);
+        .minOutput(Constants.kClimberMinOutput)
+        .maxOutput(Constants.kClimberMaxOutput);
 
     climberConfig.encoder.positionConversionFactor(Constants.kClimberGearRatio)
-                          .velocityConversionFactor(Constants.kClimberGearRatio);
+        .velocityConversionFactor(Constants.kClimberGearRatio);
 
     climberConfig.idleMode(IdleMode.kBrake);
 
     var climberRightConfig = new SparkMaxConfig()
-      .apply(climberConfig)
-      .inverted(true);  
+        .apply(climberConfig)
+        .inverted(true);
 
-    mLeftClimberMotor.configure(climberConfig, 
-                                ResetMode.kResetSafeParameters, 
-                                PersistMode.kPersistParameters);
+    mLeftClimberMotor.configure(climberConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
-    mRightClimberMotor.configure(climberRightConfig, 
-                                ResetMode.kResetSafeParameters, 
-                                PersistMode.kPersistParameters);
+    mRightClimberMotor.configure(climberRightConfig,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     mLeftClimberEncoder = mLeftClimberMotor.getEncoder();
     mRightClimberEncoder = mRightClimberMotor.getEncoder();
