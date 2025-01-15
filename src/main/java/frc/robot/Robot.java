@@ -335,22 +335,21 @@ public class Robot extends LoggedRobot {
   private void updateSim() {
     // Update the odometry in the sim.
     m_field.setRobotPose(m_drive.getPose());
-
-    Logger.recordOutput("TEST", 1234);
   }
 
   @SuppressWarnings("resource")
   private void setupLogging() {
     Logger.recordMetadata("ProjectName", "Bottom Feeder"); // Set a metadata value
 
-    if (isReal()) {
-      new WPILOGWriter(); // Log to the RoboRIO
+    // if (isReal()) {
+    // new WPILOGWriter(); // Log to the RoboRIO
 
-      // TODO: Add the next line back with a USB stick
-      // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-      new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
-    }
+    // TODO: Add the next line back with a USB stick
+    Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+    Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+    new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
+    // }
+
     // else {
     // setUseTiming(false); // Run as fast as possible
     // String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from
@@ -361,6 +360,5 @@ public class Robot extends LoggedRobot {
     // }
     RobotTelemetry.print("Logging started");
     Logger.start();
-    Logger.recordOutput("TEST", 12345);
   }
 }
