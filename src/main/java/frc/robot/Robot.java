@@ -335,11 +335,13 @@ public class Robot extends LoggedRobot {
   private void updateSim() {
     // Update the odometry in the sim.
     m_field.setRobotPose(m_drive.getPose());
+
+    Logger.recordOutput("TEST", 1234);
   }
 
   @SuppressWarnings("resource")
   private void setupLogging() {
-    Logger.recordMetadata("ProjectName", "Flipside"); // Set a metadata value
+    Logger.recordMetadata("ProjectName", "Bottom Feeder"); // Set a metadata value
 
     if (isReal()) {
       new WPILOGWriter(); // Log to the RoboRIO
@@ -357,7 +359,8 @@ public class Robot extends LoggedRobot {
     // Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,
     // "_sim"))); // Save outputs to a new log
     // }
-
+    RobotTelemetry.print("Logging started");
     Logger.start();
+    Logger.recordOutput("TEST", 12345);
   }
 }
