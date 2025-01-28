@@ -1,6 +1,7 @@
 {
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/Alerts": "Alerts",
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Auto picker": "String Chooser",
@@ -30,13 +31,15 @@
       "open": false
     },
     "transitory": {
+      "AdvantageKit": {
+        "open": true
+      },
       "SmartDashboard": {
         "Auto picker": {
           "string[]##v_/SmartDashboard/Auto picker/options": {
             "open": true
           }
-        },
-        "open": true
+        }
       }
     }
   },
