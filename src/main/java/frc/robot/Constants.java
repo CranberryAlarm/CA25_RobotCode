@@ -119,38 +119,7 @@ public class Constants {
     public static final double k_feedShooterSpeed = -0.5;
   }
 
-  // PCM
-  public static final int kPCMId = 0;
-  public static final int kIntakeSolenoidForwardId = 2;
-
   // DIO
-
-  // Shooter
-  public static final int kShooterLeftMotorId = 12;
-  public static final int kShooterRightMotorId = 13;
-
-  public static final double kShooterP = 0.00005;
-  public static final double kShooterI = 0.0;
-  public static final double kShooterD = 0.0;
-  public static final double kShooterFF = 0.0002;
-
-  public static final double kShooterMinOutput = 0;
-  public static final double kShooterMaxOutput = 1;
-
-  // Climber
-  public static final int kClimberLeftMotorId = 14;
-  public static final int kClimberRightMotorId = 15;
-  public static final double kClimberClimbSpeed = 600.0; // RPM
-  public static final double kClimberReleaseSpeed = -600.0; // RPM
-
-  public static final double kClimberGearRatio = 1.0 / 12.0;
-
-  public static final double kClimberP = 0.001;
-  public static final double kClimberI = 0.0;
-  public static final double kClimberD = 0.0;
-  public static final double kClimberMinOutput = -0.5;
-
-  public static final double kClimberMaxOutput = 0.5;
 
   // Drivetrain
   public static class Drive {
@@ -172,7 +141,6 @@ public class Constants {
     public static final double k_width = Units.feetToMeters(54.0);
     public static final double k_length = Units.feetToMeters(27.0);
 
-    // TODO: Add left and right subwoofer starting poses
     public static final Pose2d redCenterPose2d = new Pose2d(15.19, 5.50, new Rotation2d(Units.degreesToRadians(180.0)));
     public static final Pose2d blueCenterPose2d = new Pose2d(1.27, 5.50, new Rotation2d(0));
   }

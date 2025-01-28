@@ -1,13 +1,9 @@
 package frc.robot.autonomous.tasks;
 
-import static edu.wpi.first.units.Units.Kilogram;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
 import java.nio.file.Path;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
@@ -17,9 +13,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Mass;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -70,15 +63,15 @@ public class DriveTrajectoryTask extends Task {
         m_autoPath,
         new ChassisSpeeds(),
         m_drive.getPose().getRotation(),
-        m_drive.getRobotConfig()
-        );
+        m_drive.getRobotConfig());
 
     if (m_autoPath.isReversed()) {
       RobotTelemetry.print("===== PATH IS REVERSED =====");
     }
 
     double rotationErrorTolerance = Math.pow(m_autoPath.getGlobalConstraints().maxVelocityMPS(), 1.25) * 0.25;
-    // double translationErrorTolerance = m_autoPath.getGlobalConstraints().getMaxVelocityMps() * 0.0625;
+    // double translationErrorTolerance =
+    // m_autoPath.getGlobalConstraints().getMaxVelocityMps() * 0.0625;
 
     m_driveController = new PPLTVController(
         VecBuilder.fill(0.25, 0.25, 1.0),
@@ -126,13 +119,15 @@ public class DriveTrajectoryTask extends Task {
 
     // DEBUG Trajectory //////////////////////////////////////////////
     // Trajectory adjustedTrajectory = TrajectoryGenerator.generateTrajectory(
-    //     m_autoPath.getPathPoses(),
-    //     new TrajectoryConfig(
-    //         m_autoPath.getGlobalConstraints().getMaxVelocityMps(),
-    //         m_autoPath.getGlobalConstraints().getMaxAccelerationMpsSq()));
-    // Logger.recordOutput("Auto/DriveTrajectory/TargetTrajectory", adjustedTrajectory);
+    // m_autoPath.getPathPoses(),
+    // new TrajectoryConfig(
+    // m_autoPath.getGlobalConstraints().getMaxVelocityMps(),
+    // m_autoPath.getGlobalConstraints().getMaxAccelerationMpsSq()));
+    // Logger.recordOutput("Auto/DriveTrajectory/TargetTrajectory",
+    // adjustedTrajectory);
     // if (shouldReplan) {
-    //   Logger.recordOutput("Auto/DriveTrajectory/ReplannedTrajectory", adjustedTrajectory);
+    // Logger.recordOutput("Auto/DriveTrajectory/ReplannedTrajectory",
+    // adjustedTrajectory);
     // }
     /////////////////////////////////////////////////////////////////
 

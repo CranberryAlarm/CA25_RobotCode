@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.autonomous.AutoRunner;
@@ -26,7 +25,6 @@ import frc.robot.controls.controllers.DriverController;
 import frc.robot.controls.controllers.OperatorController;
 import frc.robot.simulation.Field;
 import frc.robot.subsystems.Algae;
-import frc.robot.subsystems.Compressor;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
@@ -53,12 +51,9 @@ public class Robot extends LoggedRobot {
 
   // Robot subsystems
   private List<Subsystem> m_allSubsystems = new ArrayList<>();
-  // private final Intake m_intake = Intake.getInstance();
-  private final Compressor m_compressor = Compressor.getInstance();
   private final Drivetrain m_drive = Drivetrain.getInstance();
   private final Coral m_coral = Coral.getInstance();
   private final Algae m_algae = Algae.getInstance();
-  // private final Shooter m_shooter = Shooter.getInstance();
   private final Elevator m_elevator = Elevator.getInstance();
 
   public final LEDs m_leds = LEDs.getInstance();
@@ -145,15 +140,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    // Get the x speed. We are inverting this because Xbox controllers return
-    // negative values when we push forward.
     double maxSpeed = m_driverController.getWantsSpeedMode() ? Drivetrain.kMaxBoostSpeed : Drivetrain.kMaxSpeed;
     double xSpeed = m_speedLimiter.calculate(m_driverController.getForwardAxis() * maxSpeed);
-
-    // Get the rate of angular rotation. We are inverting this because we want a
-    // positive value when we pull to the left (remember, CCW is positive in
-    // mathematics). Xbox controllers return positive values when you pull to
-    // the right by default.
 
     // m_drive.slowMode(m_driverController.getWantsSlowMode());
     // m_drive.speedMode(m_driverController.getWantsSpeedMode());
@@ -199,92 +187,16 @@ public class Robot extends LoggedRobot {
       m_elevator.goToElevatorStow();
     }
 
-    // ALGAE
-    // if (m_driverController.getWantsAlgaeStow()) {
-    // m_algae.stow();
-    // } else if (m_driverController.getWantsAlgaeGrab()) {
-    // m_algae.grabAlgae();
-    // } else if (m_driverController.getWantsAlgaeScore()) {
-    // m_algae.score();
-    // } else if (m_driverController.getWantsAlgaeGroundIntake()) {
-    // m_algae.groundIntake();
-    // }
-
-    // ELEVATOR
-    // m_elevator.setElevatorPower(m_operatorController.getElevatorAxis());
-    // if (m_operatorController.getWantsElevatorStow()) {
-    // m_elevator.goToElevatorStow();
-    // } else if (m_operatorController.getWantsElevatorL2()) {
-    // m_elevator.goToElevatorL2();
-    // } else if (m_operatorController.getWantsElevatorL3()) {
-    // m_elevator.goToElevatorL3();
-    // } else if (m_operatorController.getWantsElevatorL4()) {
-    // m_elevator.goToElevatorL4();
-    // }
-
-    // CORAL
-    // if (m_operatorController.getWantsCoralIntake()) {
-    // m_coral.intake();
-    // } else if (m_operatorController.getWantsCoralReverse()) {
-    // m_coral.reverse();
-    // } else if (m_operatorController.getWantsCoralIndex()) {
-    // m_coral.index();
-    // } else if (m_operatorController.getWantsCoralL1()) {
-    // m_coral.scoreL1();
-    // } else if (m_operatorController.getWantsCoralL24()) {
-    // m_coral.scoreL24();
-    // } else {
-    // m_coral.stopCoral();
-    // }
-
     if (m_operatorController.getWantsElevatorReset() || m_driverController.getWantsElevatorReset()) {
       RobotTelemetry.print("Resetting elevator");
       m_elevator.reset();
     }
-
-    // // Intake
-    // if (m_driverController.getWantsFullIntake()) {
-    // m_intake.goToGround();
-    // } else if (m_driverController.getWantsIntake()) {
-    // if (m_intake.getIntakeHasNote()) {
-    // m_intake.pulse();
-    // } else {
-    // m_intake.intake();
-    // }
-    // } else if (m_driverController.getWantsEject()) {
-    // m_intake.eject();
-    // } else if (m_driverController.getWantsSource()) {
-    // m_intake.goToSource();
-    // } else if (m_driverController.getWantsStow()) {
-    // m_intake.goToStow();
-    // } else if (m_intake.getIntakeState() != IntakeState.INTAKE) {
-    // m_intake.stopIntake();
-    // }
-
-    // // Climber
-    // if (m_operatorController.getWantsClimberClimb()) {
-    // m_climber.climb();
-    // } else if (m_operatorController.getWantsClimberRelease()) {
-    // m_climber.release();
-    // } else if (m_operatorController.getWantsClimberTiltLeft()) {
-    // m_climber.tiltLeft();
-    // } else if (m_operatorController.getWantsClimberTiltRight()) {
-    // m_climber.tiltRight();
-    // } else {
-    // m_climber.stopClimber();
-    // }
-
-    // if (m_operatorController.getWantsBrakeMode()) {
-    // m_climber.setBrakeMode();
-    // } else if (m_operatorController.getWantsCoastMode()) {
-    // m_climber.setCoastMode();
-    // }
   }
 
   @Override
   public void disabledInit() {
-    // m_leds.rainbow();
-    m_leds.setColor(Color.kRed);
+    m_leds.rainbow();
+    // m_leds.setColor(Color.kRed);
 
     speed = 0;
     m_allSubsystems.forEach(subsystem -> subsystem.stop());
@@ -349,14 +261,6 @@ public class Robot extends LoggedRobot {
       Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
       new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
     }
-    // else {
-    // setUseTiming(false); // Run as fast as possible
-    // String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from
-    // AdvantageScope (or prompt the user)
-    // Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-    // Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,
-    // "_sim"))); // Save outputs to a new log
-    // }
 
     Logger.start();
   }
