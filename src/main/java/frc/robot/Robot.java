@@ -77,7 +77,6 @@ public class Robot extends LoggedRobot {
     setupLogging();
 
     // Add all subsystems to the list
-    // m_allSubsystems.add(m_compressor);
     m_allSubsystems.add(m_drive);
     m_allSubsystems.add(m_coral);
     m_allSubsystems.add(m_algae);
@@ -281,17 +280,32 @@ public class Robot extends LoggedRobot {
 
   @SuppressWarnings("resource")
   private void setupLogging() {
-    Logger.recordMetadata("ProjectName", "Flipside"); // Set a metadata value
+    System.out.println("Initializing logging...");
 
-    if (isReal()) {
-      new WPILOGWriter(); // Log to the RoboRIO
+    Logger.recordMetadata("ProjectName", "Bottom Feeder");
+    // Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
 
-      // TODO: Add the next line back with a USB stick
-      // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-      new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
+    switch (BuildConstants.DIRTY) {
+      case 0:
+        Logger.recordMetadata("GitDirty", "All changes committed");
+        break;
+      case 1:
+        Logger.recordMetadata("GitDirty", "Uncomitted changes");
+        break;
+      default:
+        Logger.recordMetadata("GitDirty", "Unknown");
+        break;
     }
 
+    Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+    Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+    new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
+
+    RobotTelemetry.print("Logging started");
     Logger.start();
   }
 }
