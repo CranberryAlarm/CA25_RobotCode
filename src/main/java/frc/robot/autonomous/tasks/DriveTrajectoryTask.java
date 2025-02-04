@@ -59,8 +59,12 @@ public class DriveTrajectoryTask extends Task {
       m_isFinished = true;
     }
 
-    m_autoTrajectory = new PathPlannerTrajectory(
-        m_autoPath,
+    // m_autoTrajectory = new PathPlannerTrajectory(
+    //     m_autoPath,
+    //     new ChassisSpeeds(),
+    //     m_drive.getPose().getRotation(),
+    //     m_drive.getRobotConfig());
+    m_autoTrajectory = m_autoPath.generateTrajectory(
         new ChassisSpeeds(),
         m_drive.getPose().getRotation(),
         m_drive.getRobotConfig());
@@ -88,41 +92,43 @@ public class DriveTrajectoryTask extends Task {
     m_isFinished = false;
 
     Pose2d currentPose = m_drive.getPose();
+    Logger.recordOutput("Auto/DriveTrajectory/ActualFirstPose", currentPose);
+    Logger.recordOutput("Auto/DriveTrajectory/ActualLastPose", m_autoTrajectory.getEndState().pose);
     ChassisSpeeds currentSpeeds = m_drive.getCurrentSpeeds();
 
     m_driveController.reset(currentPose, currentSpeeds);
 
-    Rotation2d currentHeading = currentPose.getRotation();
-    Rotation2d targetHeading;
-    if (m_autoPath.isReversed()) {
-      targetHeading = m_autoPath.getPoint(0).position.minus(m_autoPath.getPoint(1).position).getAngle();
-    } else {
-      targetHeading = m_autoPath.getPoint(1).position.minus(m_autoPath.getPoint(0).position).getAngle();
-    }
-    Rotation2d headingError = currentHeading.minus(targetHeading);
+    // Rotation2d currentHeading = currentPose.getRotation();
+    // Rotation2d targetHeading;
+    // if (m_autoPath.isReversed()) {
+    //   targetHeading = m_autoPath.getPoint(0).position.minus(m_autoPath.getPoint(1).position).getAngle();
+    // } else {
+    //   targetHeading = m_autoPath.getPoint(1).position.minus(m_autoPath.getPoint(0).position).getAngle();
+    // }
+    // Rotation2d headingError = currentHeading.minus(targetHeading);
 
-    boolean onHeading = Math.hypot(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond) < 0.25
-        && Math.abs(headingError.getDegrees()) < 1;
+    // boolean onHeading = Math.hypot(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond) < 0.25
+    //     && Math.abs(headingError.getDegrees()) < 1;
 
-    boolean onStartPose = currentPose.getTranslation().getDistance(m_autoPath.getPoint(0).position) < 0.25;
+    // boolean onStartPose = currentPose.getTranslation().getDistance(m_autoPath.getPoint(0).position) < 0.25;
 
-    boolean shouldReplan = !onStartPose || !onHeading;
+    // boolean shouldReplan = !onStartPose || !onHeading;
 
-    Logger.recordOutput("Auto/DriveTrajectory/shouldReplan", shouldReplan);
+    // Logger.recordOutput("Auto/DriveTrajectory/shouldReplan", shouldReplan);
 
-    if (shouldReplan) {
-      // TODO: maybe do this later?
-      // ...
-      // Or maybe not...
-      // replanPath(currentPose, currentSpeeds);
-    }
+    // if (shouldReplan) {
+    //   // TODO: maybe do this later?
+    //   // ...
+    //   // Or maybe not...
+    //   // replanPath(currentPose, currentSpeeds);
+    // }
 
     // DEBUG Trajectory //////////////////////////////////////////////
     // Trajectory adjustedTrajectory = TrajectoryGenerator.generateTrajectory(
     // m_autoPath.getPathPoses(),
     // new TrajectoryConfig(
-    // m_autoPath.getGlobalConstraints().getMaxVelocityMps(),
-    // m_autoPath.getGlobalConstraints().getMaxAccelerationMpsSq()));
+    // m_autoPath.getGlobalConstraints().maxVelocityMPS(),
+    // m_autoPath.getGlobalConstraints().maxAccelerationMPSSq()));
     // Logger.recordOutput("Auto/DriveTrajectory/TargetTrajectory",
     // adjustedTrajectory);
     // if (shouldReplan) {
@@ -133,6 +139,7 @@ public class DriveTrajectoryTask extends Task {
 
     m_drive.clearTurnPIDAccumulation();
     RobotTelemetry.print("Running path for " + DriverStation.getAlliance().toString());
+    RobotTelemetry.print("Time Expected " + m_autoTrajectory.getTotalTimeSeconds() + " seconds");
 
     m_runningTimer.reset();
     m_runningTimer.start();
@@ -141,9 +148,9 @@ public class DriveTrajectoryTask extends Task {
   @Override
   public void update() {
     PathPlannerTrajectoryState goal = m_autoTrajectory.sample(m_runningTimer.get());
-    if (m_autoPath.isReversed()) {
-      goal = goal.reverse();
-    }
+    // if (m_autoPath.isReversed()) {
+    //   goal = goal.reverse();
+    // }
     ChassisSpeeds chassisSpeeds = m_driveController.calculateRobotRelativeSpeeds(m_drive.getPose(), goal);
 
     m_drive.drive(chassisSpeeds);
@@ -169,6 +176,7 @@ public class DriveTrajectoryTask extends Task {
   }
 
   public Pose2d getStartingPose() {
+    Logger.recordOutput("Auto/DriveTrajectory/FirstPose", m_autoPath.getStartingDifferentialPose());
     return m_autoPath.getStartingDifferentialPose();
   }
 

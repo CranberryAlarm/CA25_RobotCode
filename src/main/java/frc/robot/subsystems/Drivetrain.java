@@ -101,14 +101,14 @@ public class Drivetrain extends Subsystem {
 
   private final ModuleConfig moduleConfig = new ModuleConfig(
       Distance.ofBaseUnits(kWheelRadius, Meters), // wheel radius
-      LinearVelocity.ofBaseUnits(kMaxSpeed, MetersPerSecond),
+      LinearVelocity.ofBaseUnits(5, MetersPerSecond),
       1.0, // coefficient of friction (1.0 is a placeholder value)
-      DCMotor.getCIM(2),
-      Current.ofBaseUnits(1, Amps), // Another placeholder
+      DCMotor.getNEO(2).withReduction(kGearRatio),
+      Current.ofBaseUnits(60, Amps), // Another placeholder
       2);
 
   private final RobotConfig robotConfig = new RobotConfig(
-      Mass.ofBaseUnits(30, Kilogram),
+      Mass.ofBaseUnits(55, Kilogram),
       MomentOfInertia.ofBaseUnits(1, KilogramSquareMeters),
       moduleConfig,
       Distance.ofBaseUnits(mKinematics.trackWidthMeters, Meters));

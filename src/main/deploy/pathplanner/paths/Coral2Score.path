@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5319584232918464,
-        "y": 4.528264482386809
+        "x": 1.4059943181818182,
+        "y": 0.6595880681818176
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1547367397503354,
-        "y": 4.90548616592832
+        "x": 1.9795707545328645,
+        "y": 1.4787401124708097
       },
       "isLocked": false,
-      "linkedName": "Note3"
+      "linkedName": "CoralIntake"
     },
     {
       "anchor": {
-        "x": 1.3274844567707151,
-        "y": 5.519087794932347
+        "x": 3.579801136363636,
+        "y": 2.77356534090909
       },
       "prevControl": {
-        "x": 1.9274844567707152,
-        "y": 5.519087794932347
+        "x": 3.1496913837504215,
+        "y": 2.0285933965521212
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BlueShoot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -44,7 +44,7 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "reversed": true,
+  "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,

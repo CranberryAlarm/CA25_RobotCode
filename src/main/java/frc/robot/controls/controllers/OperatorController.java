@@ -47,7 +47,7 @@ public class OperatorController extends FilteredController {
     return this.getHatUp();
   }
 
-  public boolean getWantsGroundAlgae() {
+  public boolean getWantsScoreAlgae() {
     return this.getHatLeft();
   }
 

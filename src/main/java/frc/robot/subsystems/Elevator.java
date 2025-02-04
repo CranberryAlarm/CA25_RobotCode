@@ -88,7 +88,8 @@ public class Elevator extends Subsystem {
     L3,
     L4,
     A1,
-    A2
+    A2,
+    AS
   }
 
   private static class PeriodicIO {
@@ -216,6 +217,12 @@ public class Elevator extends Subsystem {
     mPeriodicIO.is_elevator_pos_control = true;
     mPeriodicIO.elevator_target = Constants.Elevator.kHighAlgaeHeight;
     mPeriodicIO.state = ElevatorState.A2;
+  }
+
+  public void goToAlgaeScore() {
+    mPeriodicIO.is_elevator_pos_control = true;
+    mPeriodicIO.elevator_target = Constants.Elevator.kScoreAlgaeHeight;
+    mPeriodicIO.state = ElevatorState.AS;
   }
 
   /*---------------------------------- Custom Private Functions ---------------------------------*/
