@@ -99,8 +99,8 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putData("Field", m_field);
 
     // TODO: instantiate the AlternateEncoder
-    m_motor = new SparkMax(99, MotorType.kBrushless);
-    m_encoder = m_motor.getAlternateEncoder();
+    m_motor = new SparkMax(21, MotorType.kBrushless);
+    m_encoder = m_motor.getEncoder();
   }
 
   @Override
