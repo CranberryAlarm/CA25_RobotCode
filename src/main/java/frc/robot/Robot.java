@@ -12,6 +12,11 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkMaxAlternateEncoder;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -46,6 +51,11 @@ public class Robot extends LoggedRobot {
   private final DriverController m_driverController = new DriverController(0, true, true);
   private final OperatorController m_operatorController = new OperatorController(1, true, true);
   private final GenericHID sysIdController = new GenericHID(2);
+
+  // TODO: make the SparkMax (AlternateEncoder)
+
+  private SparkMax m_motor;
+  private RelativeEncoder m_encoder; // no subsystem affiliation, so we'll just leave it as a generic "encoder"
 
   // private final SlewRateLimiter m_speedLimiter = new
   // SlewRateLimiter(Drivetrain.kMaxAcceleration);
@@ -87,6 +97,10 @@ public class Robot extends LoggedRobot {
 
     // Set up the Field2d object for simulation
     SmartDashboard.putData("Field", m_field);
+
+    // TODO: instantiate the AlternateEncoder
+    m_motor = new SparkMax(99, MotorType.kBrushless);
+    m_encoder = m_motor.getAlternateEncoder();
   }
 
   @Override
@@ -102,6 +116,9 @@ public class Robot extends LoggedRobot {
     if (this.isTestEnabled()) {
       CommandScheduler.getInstance().run();
     }
+
+    // TODO: log data with Logger.recordOutput() from the AlternateEncoder
+    Logger.recordOutput("Robot/AlternateEncoder/PositionRot", m_encoder.getPosition());
   }
 
   @Override
