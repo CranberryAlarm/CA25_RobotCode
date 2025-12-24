@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5319584232918464,
-        "y": 4.528264482386809
+        "x": 5.7,
+        "y": 4.02039
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1547367397503354,
-        "y": 4.90548616592832
+        "x": 7.290098174329094,
+        "y": 4.02039
       },
-      "isLocked": false,
-      "linkedName": "Note3"
+      "isLocked": true,
+      "linkedName": "Coral1Score"
     },
     {
       "anchor": {
-        "x": 1.3274844567707151,
-        "y": 5.519087794932347
+        "x": 5.065568181818182,
+        "y": 1.7464914772727262
       },
       "prevControl": {
-        "x": 1.9274844567707152,
-        "y": 5.519087794932347
+        "x": 6.869912478592408,
+        "y": 1.5501638594890021
+      },
+      "nextControl": {
+        "x": 3.1410511363636364,
+        "y": 1.955894886363635
+      },
+      "isLocked": true,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.4059943181818182,
+        "y": 0.6595880681818176
+      },
+      "prevControl": {
+        "x": 2.18156789016697,
+        "y": 1.7672219190942742
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": "BlueShoot"
+      "isLocked": true,
+      "linkedName": "CoralIntake"
     }
   ],
   "rotationTargets": [],

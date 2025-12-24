@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5319584232918464,
-        "y": 4.528264482386809
+        "x": 7.2,
+        "y": 4.020014204545454
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1547367397503354,
-        "y": 4.90548616592832
+        "x": 5.7900513452665265,
+        "y": 4.021582805878407
       },
-      "isLocked": false,
-      "linkedName": "Note3"
+      "isLocked": true,
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3274844567707151,
-        "y": 5.519087794932347
+        "x": 5.7,
+        "y": 4.02039
       },
       "prevControl": {
-        "x": 1.9274844567707152,
-        "y": 5.519087794932347
+        "x": 6.2276773775961844,
+        "y": 4.02039
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": "BlueShoot"
+      "isLocked": true,
+      "linkedName": "Coral1Score"
     }
   ],
   "rotationTargets": [],
@@ -44,11 +44,11 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "reversed": true,
+  "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

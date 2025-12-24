@@ -199,8 +199,9 @@ public class Robot extends LoggedRobot {
     } else if (m_operatorController.getWantsStopAlgae()) {
       m_algae.stopAlgae();
       m_algae.stow();
-    } else if (m_operatorController.getWantsGroundAlgae()) {
-      m_algae.groundIntake();
+    } else if (m_operatorController.getWantsScoreAlgae()) {
+      m_elevator.goToAlgaeScore();
+      m_algae.grabAlgae();
     } else if (m_operatorController.getWantsCoralIntake()) {
       m_coral.intake();
     }
